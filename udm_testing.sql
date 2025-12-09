@@ -149,9 +149,9 @@ INSERT INTO Award (Award_ID, Award_Number, Award_Title, Project_ID, Sponsor_Orga
 SELECT 'Award Test' as test_name, COUNT(*) as inserted_rows FROM Award;
 
 -- ========================================
--- 10. Test Modification
+-- 11. Test Modification
 -- ========================================
-INSERT INTO Modification (Event_ID, Award_ID, Modification_Number, Event_Type, Effective_Date, Funding_Amount_Change, New_End_Date, Change_Description, Requires_Prior_Approval, Approval_Status) VALUES
+INSERT INTO Modification (Modification_ID, Award_ID, Modification_Number, Event_Type, Effective_Date, Funding_Amount_Change, New_End_Date, Change_Description, Requires_Prior_Approval, Approval_Status) VALUES
 ('MOD001', 'AWD001', '001', 'Initial Award', '2024-01-01', 600000.00, NULL, 'Initial award funding', FALSE,  'Not Required'),
 ('MOD002', 'AWD001', '002', 'Incremental Funding', '2024-06-01', 50000.00, NULL, 'Additional funding for Year 2', FALSE,  'Approved');
 
