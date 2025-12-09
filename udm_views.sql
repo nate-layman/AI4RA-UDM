@@ -121,7 +121,7 @@ WHERE a.Award_Status = 'Active'
 
 CREATE VIEW vw_Overdue_Deliverables AS
 SELECT
-    d.Deliverable_ID,
+    d.AwardDeliverable_ID,
     d.Deliverable_Type,
     d.Due_Date,
     DATEDIFF(CURRENT_DATE, d.Due_Date) AS Days_Overdue,
@@ -138,7 +138,7 @@ ORDER BY d.Due_Date;
 
 CREATE VIEW vw_ComplianceRequirement_Status AS
 SELECT
-    cr.Requirement_ID,
+    cr.ComplianceRequirement_ID,
     cr.Requirement_Number,
     cr.Requirement_Type,
     cr.Requirement_Title,
