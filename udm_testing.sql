@@ -115,17 +115,32 @@ INSERT INTO Proposal (Proposal_ID, Proposal_Number, Proposal_Title, Project_ID, 
 SELECT 'Proposal Test' as test_name, COUNT(*) as inserted_rows FROM Proposal;
 
 -- ========================================
--- 8. Test ProposalBudget
+-- 8. Test BudgetCategory
 -- ========================================
-INSERT INTO ProposalBudget (Proposal_ID, Period_Number, Budget_Category, Line_Item_Description, Direct_Cost, Indirect_Cost, Total_Cost) VALUES
-('PROP001', 1, 'Senior Personnel', 'PI Salary - J. Doe', 80000.00, 26666.67, 106666.67),
-('PROP001', 1, 'Other Personnel', 'Graduate Student', 30000.00, 10000.00, 40000.00),
-('PROP001', 1, 'Equipment', 'Computing Equipment', 50000.00, 0.00, 50000.00);
+INSERT INTO BudgetCategory (Category_Code, Category_Name, Category_Description, Display_Order) VALUES
+('A', 'Senior Personnel', 'Senior/key person salaries and wages', 1),
+('B', 'Other Personnel', 'Other direct personnel costs', 2),
+('C', 'Fringe Benefits', 'Fringe benefits for personnel', 3),
+('D', 'Equipment', 'Equipment purchases over $5,000', 4),
+('E', 'Travel', 'Domestic and foreign travel', 5),
+('F', 'Participant Support', 'Participant support costs', 6),
+('G', 'Other Direct Costs', 'Materials, supplies, services', 7),
+('H', 'Indirect Costs', 'F&A/overhead costs', 8);
+
+SELECT 'BudgetCategory Test' as test_name, COUNT(*) as inserted_rows FROM BudgetCategory;
+
+-- ========================================
+-- 9. Test ProposalBudget
+-- ========================================
+INSERT INTO ProposalBudget (Proposal_ID, Period_Number, BudgetCategory_ID, Line_Item_Description, Direct_Cost, Indirect_Cost, Total_Cost) VALUES
+('PROP001', 1, (SELECT BudgetCategory_ID FROM BudgetCategory WHERE Category_Code = 'A'), 'PI Salary - J. Doe', 80000.00, 26666.67, 106666.67),
+('PROP001', 1, (SELECT BudgetCategory_ID FROM BudgetCategory WHERE Category_Code = 'B'), 'Graduate Student', 30000.00, 10000.00, 40000.00),
+('PROP001', 1, (SELECT BudgetCategory_ID FROM BudgetCategory WHERE Category_Code = 'D'), 'Computing Equipment', 50000.00, 0.00, 50000.00);
 
 SELECT 'ProposalBudget Test' as test_name, COUNT(*) as inserted_rows FROM ProposalBudget;
 
 -- ========================================
--- 9. Test Award
+-- 10. Test Award
 -- ========================================
 INSERT INTO Award (Award_ID, Award_Number, Award_Title, Project_ID, Sponsor_Organization_ID, RFA_ID, Proposal_ID, Original_Start_Date, Original_End_Date, Current_Total_Funded, Current_End_Date, Award_Status) VALUES
 ('AWD001', 'NSF-2024-12345', 'Advanced AI Research Initiative', 'PROJ001', 'SPONSOR001', 'RFA001', 'PROP001', '2024-01-01', '2026-12-31', 600000.00, '2026-12-31',  'Active'),
