@@ -28,7 +28,7 @@ DELETE FROM Proposal;
 DELETE FROM RFA;
 DELETE FROM ProjectRole;
 DELETE FROM Project;
-DELETE FROM Contact;
+DELETE FROM ContactDetails;
 DELETE FROM Personnel;
 DELETE FROM Organization;
 DELETE FROM AllowedValues;
@@ -78,14 +78,14 @@ INSERT INTO Personnel (Personnel_ID, ORCID, First_Name, Last_Name, Middle_Name, 
 SELECT 'Personnel Test' as test_name, COUNT(*) as inserted_rows FROM Personnel;
 
 -- ========================================
--- 4. Test Contact
+-- 4. Test ContactDetails
 -- ========================================
-INSERT INTO Contact (Personnel_ID, Contact_Type_Value_ID, Contact_Value, Is_Primary) VALUES
+INSERT INTO ContactDetails (Personnel_ID, AllowedValue_ID, ContactDetails_Value, Is_Primary) VALUES
 ('PER001', (SELECT Allowed_Value_ID FROM AllowedValues WHERE Allowed_Value_Code = 'EMAIL' AND Allowed_Value_Group = 'ContactType'), 'jane.doe@uidaho.edu', TRUE),
 ('PER001', (SELECT Allowed_Value_ID FROM AllowedValues WHERE Allowed_Value_Code = 'PHONE' AND Allowed_Value_Group = 'ContactType'), '208-555-1234', FALSE),
 ('PER002', (SELECT Allowed_Value_ID FROM AllowedValues WHERE Allowed_Value_Code = 'EMAIL' AND Allowed_Value_Group = 'ContactType'), 'john.smith@uidaho.edu', TRUE);
 
-SELECT 'Contact Test' as test_name, COUNT(*) as inserted_rows FROM Contact;
+SELECT 'ContactDetails Test' as test_name, COUNT(*) as inserted_rows FROM ContactDetails;
 
 -- ========================================
 -- 5. Test Project
