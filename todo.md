@@ -60,4 +60,5 @@
 - [x] Review instructions.md and the notebook to record the schema ontology into the README.md. Add a section on tables amd views summarizing each.
 ## 7. Dashboard
 - [x] Look at the udm_dashboard.md and make a todo list for that. Things like create the github action. Set up access on dolthub.
+  - Created comprehensive dashboard_todo.md with 11 sections covering DoltHub setup, GitHub Actions, frontend development, and deployment.
 
