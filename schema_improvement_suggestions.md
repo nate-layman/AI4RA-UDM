@@ -35,7 +35,55 @@ The AI4RA Unified Data Model (UDM) is well-structured with comprehensive coverag
 
 **Rationale**: Consistency improves readability and reduces confusion when joining tables.
 
-### 1.3 Ambiguous Column Names
+### 1.3 CamelCase vs Snake_case Inconsistency
+
+**Issue**: The schema mixes naming conventions inconsistently
+
+- **Table names**: PascalCase (e.g., `AllowedValues`, `ProjectRole`, `ComplianceRequirement`)
+- **Column names**: Snake_case (e.g., `Allowed_Value_ID`, `Project_ID`, `Is_Active`)
+- **Mixed approach**: Some multi-word columns like `AllowedValues` vs `Allowed_Value_ID`
+
+**Current Pattern Examples**:
+
+```sql
+-- Table: AllowedValues (PascalCase)
+Allowed_Value_ID        -- Snake_case
+Allowed_Value_Group     -- Snake_case
+Is_Active               -- Snake_case
+
+-- Table: ComplianceRequirement (PascalCase)
+Requirement_ID          -- Snake_case
+Principal_Investigator_ID -- Snake_case
+```
+
+**Suggestion**: Choose one consistent convention across the entire schema
+
+**Option A (Recommended for MySQL/Dolt)**: Keep current mixed approach but document it clearly
+
+- Table names: PascalCase (current)
+- Column names: Snake_case (current)
+- Document this convention in schema documentation
+
+**Option B**: Full Snake_case (more portable)
+
+- Table names: `allowed_values`, `project_role`, `compliance_requirement`
+- Column names: `allowed_value_id`, `project_id`, `is_active`
+
+**Option C**: Full PascalCase (less common for SQL)
+
+- Table names: `AllowedValues`, `ProjectRole` (current)
+- Column names: `AllowedValueID`, `ProjectID`, `IsActive`
+
+**Rationale**:
+
+- Current mixed approach (PascalCase tables, Snake_case columns) is actually quite common and acceptable
+- The key is consistency and clear documentation
+- Snake_case is often preferred for columns as it's case-insensitive and more readable
+- If migrating to other databases, full snake_case (Option B) is most portable
+
+**Recommendation**: Keep the current mixed approach but ensure it's consistently applied and documented. Avoid any exceptions.
+
+### 1.4 Ambiguous Column Names
 **Issue**: Multiple tables have columns with same generic names:
 - `Title` appears in Project, Proposal, Award, RFA, ComplianceRequirement, Document
 - `Status` appears in 15+ tables
