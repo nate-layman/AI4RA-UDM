@@ -1,5 +1,16 @@
 # Claude Instructions for AI4RA-UDM Project
 
+## Repository Information
+
+- **GitHub Repository**: `https://github.com/nate-layman/AI4RA-UDM`
+- **DoltHub Repository**: `n8layman/AI4RA-UDM`
+
+**CRITICAL WARNING**: The DoltHub database and GitHub repository have the SAME NAME. When performing delete operations:
+- ONLY delete Dolt TABLES (via `DROP TABLE` in Dolt SQL)
+- NEVER run commands that could delete the entire GitHub repository
+- NEVER run `rm -rf` or similar destructive file system commands on the repo directory
+- When in doubt, verify you're working with Dolt SQL commands, not GitHub/git commands
+
 ## Critical Rules
 
 1. **NEVER ALTER THE DOLT DATABASE DIRECTLY**:
@@ -36,6 +47,29 @@
 5. **Load views**: `dolt sql < udm_views.sql`
 6. **Run tests**: `dolt sql < udm_testing.sql`
 7. **If tests pass, commit**: `git add -A && git commit -m "Description"`
+
+## DoltHub Workflow
+
+When working with the DoltHub repository (`n8layman/AI4RA-UDM`):
+
+1. **Push to DoltHub**: After schema changes are tested and committed to Git
+   ```bash
+   dolt push origin main
+   ```
+
+2. **Pull from DoltHub**: To sync with remote changes
+   ```bash
+   dolt pull origin main
+   ```
+
+3. **Branch-based proposals**: For Data Dictionary updates via the dashboard
+   - Dashboard will create branches in DoltHub for proposed changes
+   - Review branches before merging to main
+   - Use `dolt checkout <branch-name>` to review proposals locally
+
+4. **Never confuse**:
+   - `git push` → GitHub repository
+   - `dolt push` → DoltHub database
 
 ## Schema Design Principles
 
