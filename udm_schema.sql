@@ -49,21 +49,40 @@ CREATE TABLE Personnel (
         ON UPDATE CASCADE
 );
 
--- Contact (depends on Personnel and AllowedValues)
-CREATE TABLE Contact (
-    Contact_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Personnel_ID VARCHAR(50) NOT NULL,
-    Contact_Type_Value_ID INT,
-    Contact_Value VARCHAR(255) NOT NULL,
+CREATE TABLE ContactDetails (
+    ContactDetails_ID INT AUTO_INCREMENT PRIMARY KEY,
+    
+    -- Only one of these can be non-null
+    Personnel_ID VARCHAR(50),
+    Organization_ID VARCHAR(50),
+    
+    -- Contact type controlled by AllowedValues (e.g., Email, Phone, Fax)
+    AllowedValue_ID INT,
+    
+    -- Contact information
+    ContactDetails_Value VARCHAR(255) NOT NULL,
     Is_Primary BOOLEAN DEFAULT FALSE,
-    CONSTRAINT fk_contact_type FOREIGN KEY (Contact_Type_Value_ID)
-        REFERENCES AllowedValues(Allowed_Value_ID)
-        ON UPDATE CASCADE,
+    
+    -- Constraints
+    CONSTRAINT chk_contact_entity CHECK (
+        (Personnel_ID IS NOT NULL AND Organization_ID IS NULL) OR
+        (Personnel_ID IS NULL AND Organization_ID IS NOT NULL)
+    ),
+    
+    -- Foreign keys
     CONSTRAINT fk_contact_personnel FOREIGN KEY (Personnel_ID)
         REFERENCES Personnel(Personnel_ID)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+    
+    CONSTRAINT fk_contact_org FOREIGN KEY (Organization_ID)
+        REFERENCES Organization(Organization_ID)
+        ON DELETE CASCADE,
+    
+    CONSTRAINT fk_contact_type FOREIGN KEY (AllowedValue_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
         ON UPDATE CASCADE
 );
+
 
 -- Project
 CREATE TABLE Project (
