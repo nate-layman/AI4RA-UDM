@@ -33,43 +33,67 @@
 
 ## Workflow for Schema Changes
 
-1. **Commit current state**: `git add -A && git commit -m "Description"`
-2. **Edit the schema file directly**: Modify `udm_schema.sql`
-3. **Drop all Dolt tables**:
+**Important**: The Dolt database is located in the `dolt_db/` directory. Clone it ONCE and NEVER delete it.
+Always work on the `test` branch for schema development.
+
+1. **Commit current state to Git**: `git add -A && git commit -m "Description"`
+2. **Edit the schema file directly**: Modify `udm_schema.sql`, `udm_views.sql`, or other schema files
+3. **Switch to dolt_db directory**: `cd dolt_db`
+4. **Ensure you're on test branch**: `dolt checkout test`
+5. **Drop only the relevant tables** (not all tables):
    ```bash
    dolt sql << 'EOF'
    SET FOREIGN_KEY_CHECKS = 0;
-   DROP TABLE IF EXISTS [all tables];
+   DROP TABLE IF EXISTS TableName1, TableName2, etc;
+   DROP VIEW IF EXISTS ViewName1, ViewName2, etc;
    SET FOREIGN_KEY_CHECKS = 1;
    EOF
    ```
-4. **Recreate from schema**: `dolt sql < udm_schema.sql`
-5. **Load views**: `dolt sql < udm_views.sql`
-6. **Run tests**: `dolt sql < udm_testing.sql`
-7. **If tests pass, commit**: `git add -A && git commit -m "Description"`
+6. **Recreate from schema**: `dolt sql < ../udm_schema.sql` (or the specific file with your changes)
+7. **Load views if needed**: `dolt sql < ../udm_views.sql`
+8. **Run tests**: `dolt sql < ../udm_testing.sql`
+9. **If tests pass, commit to both**:
+   - Git: `git add -A && git commit -m "Description"`
+   - Dolt: `dolt add -A && dolt commit -m "Description" && dolt push origin test`
+10. **Return to project root**: `cd ..`
 
 ## DoltHub Workflow
 
 When working with the DoltHub repository (`n8layman/AI4RA-UDM`):
 
-1. **Push to DoltHub**: After schema changes are tested and committed to Git
+1. **Initial Setup** (done once):
    ```bash
-   dolt push origin main
+   dolt clone n8layman/AI4RA-UDM dolt_db
+   cd dolt_db
+   dolt checkout test
+   cd ..
    ```
 
-2. **Pull from DoltHub**: To sync with remote changes
+2. **Push to DoltHub**: After schema changes are tested (from `dolt_db/` directory)
    ```bash
-   dolt pull origin main
+   cd dolt_db
+   dolt add -A
+   dolt commit -m "Description"
+   dolt push origin test
+   cd ..
    ```
 
-3. **Branch-based proposals**: For Data Dictionary updates via the dashboard
+3. **Pull from DoltHub**: To sync with remote changes (from `dolt_db/` directory)
+   ```bash
+   cd dolt_db
+   dolt pull origin test
+   cd ..
+   ```
+
+4. **Branch-based proposals**: For Data Dictionary updates via the dashboard
    - Dashboard will create branches in DoltHub for proposed changes
    - Review branches before merging to main
    - Use `dolt checkout <branch-name>` to review proposals locally
 
-4. **Never confuse**:
-   - `git push` → GitHub repository
-   - `dolt push` → DoltHub database
+5. **Never confuse**:
+   - `git push` → GitHub repository (source .sql files)
+   - `dolt push` → DoltHub database (actual database state)
+   - Git works at project root, Dolt works in `dolt_db/` directory
 
 ## Schema Design Principles
 
