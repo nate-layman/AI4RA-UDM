@@ -447,6 +447,10 @@ Use this checklist to track progress on implementing schema improvements:
 ### Completed
 
 - [x] **Document naming conventions** in README.md (2024-12-08)
+- [x] **Standardize Organization vs Org** - Changed all Org_\* columns to Organization_\* (2024-12-08)
+  - Updated: Organization table, Personnel, Project, RFA, Proposal, Award, Subaward, CostShare, Fund, FinanceCode, IndirectRate
+  - Total: 15 columns renamed across 11 tables
+  - Migration script: migrations/001_standardize_org_to_organization.sql
 - [x] **Create comprehensive testing suite** (udm_testing.sql)
 - [x] **Generate ERD documentation** (Mermaid diagram in README.md)
 - [x] **Populate DataDictionary** table (72 entity definitions)

@@ -9,7 +9,7 @@ SELECT
     a.Current_Total_Funded,
     a.Original_Start_Date,
     a.Current_End_Date,
-    o.Org_Name AS Sponsor_Name,
+    o.Organization_Name AS Sponsor_Name,
     p.Title AS Project_Title,
     COALESCE(SUM(CASE WHEN t.Transaction_Type = 'Expense' THEN t.Amount ELSE 0 END), 0) AS Total_Expenses,
     COALESCE(SUM(CASE WHEN t.Transaction_Type = 'Encumbrance' THEN t.Amount ELSE 0 END), 0) AS Total_Encumbrances,
@@ -17,12 +17,12 @@ SELECT
         COALESCE(SUM(CASE WHEN t.Transaction_Type IN ('Expense','Encumbrance') THEN t.Amount ELSE 0 END), 0) AS Available_Balance,
     DATEDIFF(a.Current_End_Date, CURRENT_DATE) AS Days_Until_End
 FROM Award a
-LEFT JOIN Organization o ON a.Sponsor_Org_ID = o.Org_ID
+LEFT JOIN Organization o ON a.Sponsor_Organization_ID = o.Organization_ID
 LEFT JOIN Project p ON a.Project_ID = p.Project_ID
 LEFT JOIN Transaction t ON a.Award_ID = t.Award_ID
 WHERE a.Status = 'Active'
 GROUP BY a.Award_ID, a.Award_Number, a.Title, a.Status, a.Current_Total_Funded,
-         a.Original_Start_Date, a.Current_End_Date, o.Org_Name, p.Title;
+         a.Original_Start_Date, a.Current_End_Date, o.Organization_Name, p.Title;
 
 CREATE VIEW vw_Active_Personnel_Roles AS
 SELECT
@@ -79,11 +79,11 @@ SELECT
     a.Title,
     a.Current_End_Date,
     DATEDIFF(a.Current_End_Date, CURRENT_DATE) AS Days_Until_Expiration,
-    o.Org_Name AS Sponsor_Name,
+    o.Organization_Name AS Sponsor_Name,
     CONCAT(pers.First_Name, ' ', pers.Last_Name) AS PI_Name,
     pers.Primary_Email AS PI_Email
 FROM Award a
-JOIN Organization o ON a.Sponsor_Org_ID = o.Org_ID
+JOIN Organization o ON a.Sponsor_Organization_ID = o.Organization_ID
 LEFT JOIN ProjectRole pr ON a.Award_ID = pr.Funding_Award_ID
 LEFT JOIN AllowedValues av ON pr.Role_Value_ID = av.Allowed_Value_ID
 LEFT JOIN Personnel pers ON pr.Personnel_ID = pers.Personnel_ID

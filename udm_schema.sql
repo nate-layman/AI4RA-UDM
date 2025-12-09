@@ -18,20 +18,20 @@ CREATE TABLE AllowedValues (
 
 -- Then create Organization (no external dependencies)
 CREATE TABLE Organization (
-    Org_ID VARCHAR(50) PRIMARY KEY,
-    Org_Name VARCHAR(255) NOT NULL,
-    Org_Type VARCHAR(50) NOT NULL,
-    Parent_Org_ID VARCHAR(50),
+    Organization_ID VARCHAR(50) PRIMARY KEY,
+    Organization_Name VARCHAR(255) NOT NULL,
+    Organization_Type VARCHAR(50) NOT NULL,
+    Parent_Organization_ID VARCHAR(50),
     UEI VARCHAR(12),
     Is_Active BOOLEAN DEFAULT TRUE,
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     Last_Modified_By VARCHAR(50),
     Created_By_Personnel_ID VARCHAR(50),
-    CONSTRAINT chk_org_type CHECK (Org_Type IN ('Department','College','School','Sponsor','Subrecipient','Vendor','Institute','Center')),
+    CONSTRAINT chk_organization_type CHECK (Organization_Type IN ('Department','College','School','Sponsor','Subrecipient','Vendor','Institute','Center')),
     CONSTRAINT chk_uei_format CHECK (UEI IS NULL OR CHAR_LENGTH(UEI) = 12),
-    CONSTRAINT fk_org_parent FOREIGN KEY (Parent_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_organization_parent FOREIGN KEY (Parent_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
@@ -46,7 +46,7 @@ CREATE TABLE Personnel (
     Institutional_ID VARCHAR(50) UNIQUE,
     Primary_Email VARCHAR(255),
     Person_Type VARCHAR(50),
-    Department_Org_ID VARCHAR(50),
+    Department_Organization_ID VARCHAR(50),
     Is_Active BOOLEAN DEFAULT TRUE,
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -54,8 +54,8 @@ CREATE TABLE Personnel (
     Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_personnel_type CHECK (Person_Type IN ('Faculty','Staff','Student','External','Postdoc','Resident','Fellow')),
     CONSTRAINT chk_orcid_format CHECK (ORCID IS NULL OR ORCID REGEXP '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$'),
-    CONSTRAINT fk_personnel_dept FOREIGN KEY (Department_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_personnel_dept FOREIGN KEY (Department_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
@@ -88,7 +88,7 @@ CREATE TABLE Project (
     Abstract TEXT,
     Start_Date DATE,
     End_Date DATE,
-    Lead_Org_ID VARCHAR(50) NOT NULL,
+    Lead_Organization_ID VARCHAR(50) NOT NULL,
     Status VARCHAR(50) DEFAULT 'Active',
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -100,15 +100,15 @@ CREATE TABLE Project (
         REFERENCES Project(Project_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    CONSTRAINT fk_project_org FOREIGN KEY (Lead_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_project_org FOREIGN KEY (Lead_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE
 );
 
 -- RFA
 CREATE TABLE RFA (
     RFA_ID VARCHAR(50) PRIMARY KEY,
-    Sponsor_Org_ID VARCHAR(50) NOT NULL,
+    Sponsor_Organization_ID VARCHAR(50) NOT NULL,
     RFA_Number VARCHAR(100),
     RFA_Title VARCHAR(500) NOT NULL,
     Program_Code VARCHAR(100),
@@ -117,8 +117,8 @@ CREATE TABLE RFA (
     CFDA_Number VARCHAR(20),
     Is_Active BOOLEAN DEFAULT TRUE,
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_rfa_sponsor FOREIGN KEY (Sponsor_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_rfa_sponsor FOREIGN KEY (Sponsor_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE
 );
 
@@ -128,7 +128,7 @@ CREATE TABLE Proposal (
     Proposal_Number VARCHAR(100) UNIQUE,
     Title VARCHAR(500) NOT NULL,
     Project_ID VARCHAR(50),
-    Sponsor_Org_ID VARCHAR(50) NOT NULL,
+    Sponsor_Organization_ID VARCHAR(50) NOT NULL,
     RFA_ID VARCHAR(50),
     Proposed_Start_Date DATE,
     Proposed_End_Date DATE,
@@ -151,8 +151,8 @@ CREATE TABLE Proposal (
         REFERENCES Project(Project_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    CONSTRAINT fk_proposal_sponsor FOREIGN KEY (Sponsor_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_proposal_sponsor FOREIGN KEY (Sponsor_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE,
     CONSTRAINT fk_proposal_rfa FOREIGN KEY (RFA_ID)
         REFERENCES RFA(RFA_ID)
@@ -191,7 +191,7 @@ CREATE TABLE Award (
     Award_Number VARCHAR(100) UNIQUE NOT NULL,
     Title VARCHAR(500) NOT NULL,
     Project_ID VARCHAR(50) NOT NULL,
-    Sponsor_Org_ID VARCHAR(50) NOT NULL,
+    Sponsor_Organization_ID VARCHAR(50) NOT NULL,
     RFA_ID VARCHAR(50),
     Proposal_ID VARCHAR(50),
     Original_Start_Date DATE NOT NULL,
@@ -202,7 +202,7 @@ CREATE TABLE Award (
     Status VARCHAR(50) DEFAULT 'Pending',
     CFDA_Number VARCHAR(20),
     Federal_Award_ID VARCHAR(100),
-    Prime_Sponsor_Org_ID VARCHAR(50),
+    Prime_Sponsor_Organization_ID VARCHAR(50),
     Flow_Through_Indicator BOOLEAN DEFAULT FALSE,
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -212,8 +212,8 @@ CREATE TABLE Award (
     CONSTRAINT fk_award_project FOREIGN KEY (Project_ID)
         REFERENCES Project(Project_ID)
         ON UPDATE CASCADE,
-    CONSTRAINT fk_award_sponsor FOREIGN KEY (Sponsor_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_award_sponsor FOREIGN KEY (Sponsor_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE,
     CONSTRAINT fk_award_rfa FOREIGN KEY (RFA_ID)
         REFERENCES RFA(RFA_ID)
@@ -223,8 +223,8 @@ CREATE TABLE Award (
         REFERENCES Proposal(Proposal_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    CONSTRAINT fk_award_prime_sponsor FOREIGN KEY (Prime_Sponsor_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_award_prime_sponsor FOREIGN KEY (Prime_Sponsor_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
@@ -357,7 +357,7 @@ CREATE TABLE AwardBudget (
 CREATE TABLE Subaward (
     Subaward_ID VARCHAR(50) PRIMARY KEY,
     Prime_Award_ID VARCHAR(50) NOT NULL,
-    Subrecipient_Org_ID VARCHAR(50) NOT NULL,
+    Subrecipient_Organization_ID VARCHAR(50) NOT NULL,
     Subaward_Number VARCHAR(100) UNIQUE,
     Amount DECIMAL(15,2),
     Start_Date DATE,
@@ -376,8 +376,8 @@ CREATE TABLE Subaward (
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    CONSTRAINT fk_subaward_org FOREIGN KEY (Subrecipient_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_subaward_org FOREIGN KEY (Subrecipient_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE
 );
 
@@ -387,7 +387,7 @@ CREATE TABLE CostShare (
     Award_ID VARCHAR(50) NOT NULL,
     Committed_Amount DECIMAL(15,2) NOT NULL,
     Commitment_Type VARCHAR(50),
-    Source_Org_ID VARCHAR(50),
+    Source_Organization_ID VARCHAR(50),
     Source_Fund_Code VARCHAR(20),
     Source_Description VARCHAR(500),
     Is_Mandatory BOOLEAN DEFAULT FALSE,
@@ -401,8 +401,8 @@ CREATE TABLE CostShare (
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    CONSTRAINT fk_costshare_org FOREIGN KEY (Source_Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_costshare_org FOREIGN KEY (Source_Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
@@ -517,14 +517,14 @@ CREATE TABLE Fund (
     Fund_Code VARCHAR(20) PRIMARY KEY,
     Fund_Name VARCHAR(255) NOT NULL,
     Fund_Type_Value_ID INT,
-    Org_ID VARCHAR(50),
+    Organization_ID VARCHAR(50),
     Is_Active BOOLEAN DEFAULT TRUE,
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_fund_type FOREIGN KEY (Fund_Type_Value_ID)
         REFERENCES AllowedValues(Allowed_Value_ID)
         ON UPDATE CASCADE,
-    CONSTRAINT fk_fund_org FOREIGN KEY (Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_fund_org FOREIGN KEY (Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
@@ -553,7 +553,7 @@ CREATE TABLE FinanceCode (
     Finance_Name VARCHAR(255) NOT NULL,
     Award_ID VARCHAR(50),
     Purpose VARCHAR(100),
-    Org_ID VARCHAR(50),
+    Organization_ID VARCHAR(50),
     Is_Active BOOLEAN DEFAULT TRUE,
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -561,8 +561,8 @@ CREATE TABLE FinanceCode (
         REFERENCES Award(Award_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    CONSTRAINT fk_fincode_org FOREIGN KEY (Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_fincode_org FOREIGN KEY (Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
     CONSTRAINT chk_purpose CHECK (Purpose IN (
@@ -587,7 +587,7 @@ CREATE TABLE ActivityCode (
 -- IndirectRate
 CREATE TABLE IndirectRate (
     Rate_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Org_ID VARCHAR(50) NOT NULL,
+    Organization_ID VARCHAR(50) NOT NULL,
     Rate_Type VARCHAR(50),
     Rate_Percentage DECIMAL(5,2) NOT NULL,
     Effective_Start_Date DATE NOT NULL,
@@ -596,8 +596,8 @@ CREATE TABLE IndirectRate (
     Negotiated_Agreement_ID VARCHAR(50),
     Is_Active BOOLEAN DEFAULT TRUE,
     Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_rate_org FOREIGN KEY (Org_ID)
-        REFERENCES Organization(Org_ID)
+    CONSTRAINT fk_rate_org FOREIGN KEY (Organization_ID)
+        REFERENCES Organization(Organization_ID)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
     CONSTRAINT chk_rate_type CHECK (Rate_Type IN (

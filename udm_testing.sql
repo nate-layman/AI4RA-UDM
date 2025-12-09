@@ -25,21 +25,21 @@ SELECT 'AllowedValues Test' as test_name, COUNT(*) as inserted_rows FROM Allowed
 -- ========================================
 -- 2. Test Organization
 -- ========================================
-INSERT INTO Organization (Org_ID, Org_Name, Org_Type, Parent_Org_ID, UEI, Created_By_Personnel_ID) VALUES
+INSERT INTO Organization (Organization_ID, Organization_Name, Organization_Type, Parent_Organization_ID, UEI, Created_By_Personnel_ID) VALUES
 ('UNI001', 'University of Idaho', 'College', NULL, '123456789012', NULL),
 ('DEPT001', 'Computer Science', 'Department', 'UNI001', NULL, NULL),
 ('SPONSOR001', 'National Science Foundation', 'Sponsor', NULL, '987654321098', NULL),
 ('SUB001', 'Test Subrecipient Org', 'Subrecipient', NULL, '111222333444', NULL);
 
 SELECT 'Organization Test' as test_name, COUNT(*) as inserted_rows FROM Organization;
-SELECT 'Organization Hierarchy Test' as test_name, o.Org_Name as org, p.Org_Name as parent
+SELECT 'Organization Hierarchy Test' as test_name, o.Organization_Name as org, p.Organization_Name as parent
 FROM Organization o
-LEFT JOIN Organization p ON o.Parent_Org_ID = p.Org_ID;
+LEFT JOIN Organization p ON o.Parent_Organization_ID = p.Organization_ID;
 
 -- ========================================
 -- 3. Test Personnel
 -- ========================================
-INSERT INTO Personnel (Personnel_ID, ORCID, First_Name, Last_Name, Middle_Name, Institutional_ID, Primary_Email, Person_Type, Department_Org_ID, Created_By_Personnel_ID) VALUES
+INSERT INTO Personnel (Personnel_ID, ORCID, First_Name, Last_Name, Middle_Name, Institutional_ID, Primary_Email, Person_Type, Department_Organization_ID, Created_By_Personnel_ID) VALUES
 ('PER001', '0000-0001-2345-6789', 'Jane', 'Doe', 'A', 'EMP001', 'jane.doe@uidaho.edu', 'Faculty', 'DEPT001', NULL),
 ('PER002', '0000-0002-3456-7890', 'John', 'Smith', 'B', 'EMP002', 'john.smith@uidaho.edu', 'Faculty', 'DEPT001', NULL),
 ('PER003', NULL, 'Alice', 'Johnson', NULL, 'EMP003', 'alice.j@uidaho.edu', 'Staff', 'DEPT001', NULL);
@@ -59,7 +59,7 @@ SELECT 'Contact Test' as test_name, COUNT(*) as inserted_rows FROM Contact;
 -- ========================================
 -- 5. Test Project
 -- ========================================
-INSERT INTO Project (Project_ID, Title, Acronym, Project_Type, Abstract, Start_Date, End_Date, Lead_Org_ID, Status, Created_By_Personnel_ID) VALUES
+INSERT INTO Project (Project_ID, Title, Acronym, Project_Type, Abstract, Start_Date, End_Date, Lead_Organization_ID, Status, Created_By_Personnel_ID) VALUES
 ('PROJ001', 'Advanced AI Research Initiative', 'AIRI', 'Research', 'Research in artificial intelligence and machine learning', '2024-01-01', '2026-12-31', 'DEPT001', 'Active', 'PER001'),
 ('PROJ002', 'Graduate Training Program', 'GTP', 'Training', 'Graduate student training in computer science', '2024-06-01', '2027-05-31', 'DEPT001', 'Active', 'PER002');
 
@@ -68,7 +68,7 @@ SELECT 'Project Test' as test_name, COUNT(*) as inserted_rows FROM Project;
 -- ========================================
 -- 6. Test RFA
 -- ========================================
-INSERT INTO RFA (RFA_ID, Sponsor_Org_ID, RFA_Number, RFA_Title, Program_Code, CFDA_Number) VALUES
+INSERT INTO RFA (RFA_ID, Sponsor_Organization_ID, RFA_Number, RFA_Title, Program_Code, CFDA_Number) VALUES
 ('RFA001', 'SPONSOR001', 'NSF-24-001', 'Computer and Information Science and Engineering Core Programs', 'CISE-CORE', '47.070'),
 ('RFA002', 'SPONSOR001', 'NSF-24-002', 'Graduate Research Fellowship Program', 'GRFP', '47.076');
 
@@ -77,7 +77,7 @@ SELECT 'RFA Test' as test_name, COUNT(*) as inserted_rows FROM RFA;
 -- ========================================
 -- 7. Test Proposal
 -- ========================================
-INSERT INTO Proposal (Proposal_ID, Proposal_Number, Title, Project_ID, Sponsor_Org_ID, RFA_ID, Proposed_Start_Date, Proposed_End_Date, Total_Proposed_Direct, Total_Proposed_Indirect, Total_Proposed_Budget, Submission_Deadline, Internal_Approval_Status, Decision_Status, Created_By_Personnel_ID) VALUES
+INSERT INTO Proposal (Proposal_ID, Proposal_Number, Title, Project_ID, Sponsor_Organization_ID, RFA_ID, Proposed_Start_Date, Proposed_End_Date, Total_Proposed_Direct, Total_Proposed_Indirect, Total_Proposed_Budget, Submission_Deadline, Internal_Approval_Status, Decision_Status, Created_By_Personnel_ID) VALUES
 ('PROP001', 'UI-2024-001', 'Advanced AI Research Initiative', 'PROJ001', 'SPONSOR001', 'RFA001', '2024-01-01', '2026-12-31', 450000.00, 150000.00, 600000.00, '2023-11-15', 'Approved', 'Submitted', 'PER001'),
 ('PROP002', 'UI-2024-002', 'Graduate Training Program', 'PROJ002', 'SPONSOR001', 'RFA002', '2024-06-01', '2027-05-31', 300000.00, 100000.00, 400000.00, '2023-12-01', 'Approved', 'Awarded', 'PER002');
 
@@ -96,7 +96,7 @@ SELECT 'ProposalBudget Test' as test_name, COUNT(*) as inserted_rows FROM Propos
 -- ========================================
 -- 9. Test Award
 -- ========================================
-INSERT INTO Award (Award_ID, Award_Number, Title, Project_ID, Sponsor_Org_ID, RFA_ID, Proposal_ID, Original_Start_Date, Original_End_Date, Current_Total_Funded, Current_End_Date, Status, Created_By_Personnel_ID) VALUES
+INSERT INTO Award (Award_ID, Award_Number, Title, Project_ID, Sponsor_Organization_ID, RFA_ID, Proposal_ID, Original_Start_Date, Original_End_Date, Current_Total_Funded, Current_End_Date, Status, Created_By_Personnel_ID) VALUES
 ('AWD001', 'NSF-2024-12345', 'Advanced AI Research Initiative', 'PROJ001', 'SPONSOR001', 'RFA001', 'PROP001', '2024-01-01', '2026-12-31', 600000.00, '2026-12-31', 'Active', 'PER001'),
 ('AWD002', 'NSF-2024-67890', 'Graduate Training Program', 'PROJ002', 'SPONSOR001', 'RFA002', 'PROP002', '2024-06-01', '2027-05-31', 400000.00, '2027-05-31', 'Active', 'PER002');
 
@@ -142,7 +142,7 @@ SELECT 'AwardBudget Test' as test_name, COUNT(*) as inserted_rows FROM AwardBudg
 -- ========================================
 -- 14. Test Subaward
 -- ========================================
-INSERT INTO Subaward (Subaward_ID, Prime_Award_ID, Subrecipient_Org_ID, Subaward_Number, Amount, Start_Date, End_Date, Status, PI_Name, Risk_Level, Created_By_Personnel_ID) VALUES
+INSERT INTO Subaward (Subaward_ID, Prime_Award_ID, Subrecipient_Organization_ID, Subaward_Number, Amount, Start_Date, End_Date, Status, PI_Name, Risk_Level, Created_By_Personnel_ID) VALUES
 ('SUB001', 'AWD001', 'SUB001', 'UI-SUB-2024-001', 100000.00, '2024-03-01', '2026-02-28', 'Active', 'Dr. Bob Williams', 'Low', 'PER001');
 
 SELECT 'Subaward Test' as test_name, COUNT(*) as inserted_rows FROM Subaward;
@@ -150,7 +150,7 @@ SELECT 'Subaward Test' as test_name, COUNT(*) as inserted_rows FROM Subaward;
 -- ========================================
 -- 15. Test CostShare
 -- ========================================
-INSERT INTO CostShare (Award_ID, Committed_Amount, Commitment_Type, Source_Org_ID, Source_Description, Is_Mandatory, Status, Met_Amount) VALUES
+INSERT INTO CostShare (Award_ID, Committed_Amount, Commitment_Type, Source_Organization_ID, Source_Description, Is_Mandatory, Status, Met_Amount) VALUES
 ('AWD001', 25000.00, 'In-Kind', 'DEPT001', 'Faculty time contribution', TRUE, 'Committed', 0.00);
 
 SELECT 'CostShare Test' as test_name, COUNT(*) as inserted_rows FROM CostShare;
@@ -184,7 +184,7 @@ SELECT 'ProjectRole Test' as test_name, COUNT(*) as inserted_rows FROM ProjectRo
 -- ========================================
 -- 19. Test Fund, Account, FinanceCode, ActivityCode
 -- ========================================
-INSERT INTO Fund (Fund_Code, Fund_Name, Fund_Type_Value_ID, Org_ID) VALUES
+INSERT INTO Fund (Fund_Code, Fund_Name, Fund_Type_Value_ID, Organization_ID) VALUES
 ('10001', 'General Fund', (SELECT Allowed_Value_ID FROM AllowedValues WHERE Allowed_Value_Code = 'GRANT' AND Allowed_Value_Group = 'FundType'), 'UNI001'),
 ('20001', 'Grant Fund - NSF', (SELECT Allowed_Value_ID FROM AllowedValues WHERE Allowed_Value_Code = 'GRANT' AND Allowed_Value_Group = 'FundType'), 'DEPT001');
 
@@ -197,7 +197,7 @@ INSERT INTO ActivityCode (Activity_Code, Activity_Name, Activity_Type) VALUES
 ('RES', 'Research', 'Research'),
 ('INS', 'Instruction', 'Instruction');
 
-INSERT INTO FinanceCode (Finance_Code, Finance_Name, Award_ID, Purpose, Org_ID) VALUES
+INSERT INTO FinanceCode (Finance_Code, Finance_Name, Award_ID, Purpose, Organization_ID) VALUES
 ('FIN001', 'NSF AI Award Direct', 'AWD001', 'Direct Costs', 'DEPT001'),
 ('FIN002', 'NSF AI Award IDC', 'AWD001', 'Indirect Costs', 'UNI001');
 
@@ -209,7 +209,7 @@ SELECT 'FinanceCode Test' as test_name, COUNT(*) as inserted_rows FROM FinanceCo
 -- ========================================
 -- 20. Test IndirectRate
 -- ========================================
-INSERT INTO IndirectRate (Org_ID, Rate_Type, Rate_Percentage, Effective_Start_Date, Effective_End_Date, Base_Type, Negotiated_Agreement_ID) VALUES
+INSERT INTO IndirectRate (Organization_ID, Rate_Type, Rate_Percentage, Effective_Start_Date, Effective_End_Date, Base_Type, Negotiated_Agreement_ID) VALUES
 ('UNI001', 'On-Campus', 53.50, '2024-01-01', '2026-12-31', 'MTDC', 'NICRA-2024'),
 ('UNI001', 'Off-Campus', 26.00, '2024-01-01', '2026-12-31', 'MTDC', 'NICRA-2024');
 
@@ -280,9 +280,9 @@ FROM Award a
 INNER JOIN Project p ON a.Project_ID = p.Project_ID;
 
 SELECT 'Award -> Organization Relationship' as test_name,
-       a.Award_Number, o.Org_Name as Sponsor
+       a.Award_Number, o.Organization_Name as Sponsor
 FROM Award a
-INNER JOIN Organization o ON a.Sponsor_Org_ID = o.Org_ID;
+INNER JOIN Organization o ON a.Sponsor_Organization_ID = o.Organization_ID;
 
 SELECT 'ProjectRole -> Personnel Relationship' as test_name,
        pr.Project_ID,
@@ -378,9 +378,9 @@ SELECT 'DataDictionary', COUNT(*) FROM DataDictionary;
 SELECT '=== CONSTRAINT VALIDATION ===' as test_section;
 
 -- Test CHECK constraints
-SELECT 'Organization Type Constraints' as test_name, Org_Type, COUNT(*) as count
+SELECT 'Organization Type Constraints' as test_name, Organization_Type, COUNT(*) as count
 FROM Organization
-GROUP BY Org_Type;
+GROUP BY Organization_Type;
 
 SELECT 'Personnel Type Constraints' as test_name, Person_Type, COUNT(*) as count
 FROM Personnel
