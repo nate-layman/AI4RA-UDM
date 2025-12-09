@@ -7,8 +7,6 @@ CREATE TABLE AllowedValues (
     Allowed_Value_Description TEXT,
     Parent_Value_ID INT,
     Display_Order INT,
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT uq_value_code UNIQUE (Allowed_Value_Group, Allowed_Value_Code),
     CONSTRAINT fk_value_parent FOREIGN KEY (Parent_Value_ID)
         REFERENCES AllowedValues(Allowed_Value_ID)
@@ -23,19 +21,12 @@ CREATE TABLE Organization (
     Organization_Type VARCHAR(50) NOT NULL,
     Parent_Organization_ID VARCHAR(50),
     UEI VARCHAR(12),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Last_Modified_By VARCHAR(50),
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_organization_type CHECK (Organization_Type IN ('Department','College','School','Sponsor','Subrecipient','Vendor','Institute','Center')),
     CONSTRAINT chk_uei_format CHECK (UEI IS NULL OR CHAR_LENGTH(UEI) = 12),
     CONSTRAINT fk_organization_parent FOREIGN KEY (Parent_Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_organization_modified_by FOREIGN KEY (Last_Modified_By) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT fk_organization_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- Then Personnel (depends on Organization)
@@ -49,20 +40,13 @@ CREATE TABLE Personnel (
     Primary_Email VARCHAR(320) NOT NULL,
     Person_Type VARCHAR(50),
     Department_Organization_ID VARCHAR(50),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Last_Modified_By VARCHAR(50),
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_personnel_type CHECK (Person_Type IN ('Faculty','Staff','Student','External','Postdoc','Resident','Fellow')),
     CONSTRAINT chk_orcid_format CHECK (ORCID IS NULL OR ORCID REGEXP '^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$'),
     CONSTRAINT chk_personnel_email_format CHECK (Primary_Email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$'),
     CONSTRAINT fk_personnel_dept FOREIGN KEY (Department_Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_personnel_modified_by FOREIGN KEY (Last_Modified_By) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT fk_personnel_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- Contact (depends on Personnel and AllowedValues)
@@ -72,8 +56,6 @@ CREATE TABLE Contact (
     Contact_Type_Value_ID INT,
     Contact_Value VARCHAR(255) NOT NULL,
     Is_Primary BOOLEAN DEFAULT FALSE,
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_contact_type FOREIGN KEY (Contact_Type_Value_ID)
         REFERENCES AllowedValues(Allowed_Value_ID)
         ON UPDATE CASCADE,
@@ -95,10 +77,6 @@ CREATE TABLE Project (
     End_Date DATE,
     Lead_Organization_ID VARCHAR(50) NOT NULL,
     Status VARCHAR(50) DEFAULT 'Active',
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Last_Modified_By VARCHAR(50),
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_project_type CHECK (Project_Type IN ('Research','Training','Service','Clinical Trial','Fellowship','Infrastructure','Other')),
     CONSTRAINT chk_project_status CHECK (Status IN ('Planning','Active','Completed','Suspended','Cancelled')),
     CONSTRAINT fk_project_parent FOREIGN KEY (Parent_Project_ID)
@@ -108,9 +86,7 @@ CREATE TABLE Project (
     CONSTRAINT fk_project_org FOREIGN KEY (Lead_Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE,
-    CONSTRAINT chk_project_date_range CHECK (End_Date IS NULL OR End_Date >= Start_Date),
-    CONSTRAINT fk_project_modified_by FOREIGN KEY (Last_Modified_By) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT fk_project_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT chk_project_date_range CHECK (End_Date IS NULL OR End_Date >= Start_Date)
 );
 
 -- RFA
@@ -123,8 +99,6 @@ CREATE TABLE RFA (
     Announcement_URL VARCHAR(1000),
     Opportunity_Number VARCHAR(100),
     CFDA_Number VARCHAR(20),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_rfa_sponsor FOREIGN KEY (Sponsor_Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE
@@ -149,10 +123,6 @@ CREATE TABLE Proposal (
     Decision_Status VARCHAR(50) DEFAULT 'Pending',
     Decision_Date DATE,
     PAF_Routing_Status VARCHAR(50),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Last_Modified_By VARCHAR(50),
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_internal_status CHECK (Internal_Approval_Status IN ('Draft','In Review','Approved','Rejected','Withdrawn')),
     CONSTRAINT chk_decision_status CHECK (Decision_Status IN ('Pending','Submitted','Under Review','Awarded','Declined','Withdrawn')),
     CONSTRAINT fk_proposal_project FOREIGN KEY (Project_ID)
@@ -166,9 +136,7 @@ CREATE TABLE Proposal (
         REFERENCES RFA(RFA_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    CONSTRAINT chk_proposal_date_range CHECK (Proposed_End_Date IS NULL OR Proposed_End_Date >= Proposed_Start_Date),
-    CONSTRAINT fk_proposal_modified_by FOREIGN KEY (Last_Modified_By) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT fk_proposal_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT chk_proposal_date_range CHECK (Proposed_End_Date IS NULL OR Proposed_End_Date >= Proposed_Start_Date)
 );
 
 -- ProposalBudget
@@ -183,7 +151,6 @@ CREATE TABLE ProposalBudget (
     Total_Cost DECIMAL(18,2),
     Quantity DECIMAL(10,2),
     Unit_Cost DECIMAL(18,2),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_budget_category CHECK (Budget_Category IN (
         'Senior Personnel','Other Personnel','Fringe Benefits','Equipment',
         'Travel','Participant Support','Other Direct Costs','Consultants',
@@ -215,10 +182,6 @@ CREATE TABLE Award (
     Federal_Award_ID VARCHAR(100),
     Prime_Sponsor_Organization_ID VARCHAR(50),
     Flow_Through_Indicator BOOLEAN DEFAULT FALSE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Last_Modified_By VARCHAR(50),
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_award_status CHECK (Status IN ('Pending','Active','Closed','Suspended','Terminated')),
     CONSTRAINT fk_award_project FOREIGN KEY (Project_ID)
         REFERENCES Project(Project_ID)
@@ -239,9 +202,7 @@ CREATE TABLE Award (
         ON DELETE SET NULL
         ON UPDATE CASCADE,
     CONSTRAINT chk_award_date_range CHECK (Current_End_Date >= Original_Start_Date),
-    CONSTRAINT chk_award_original_dates CHECK (Original_End_Date >= Original_Start_Date),
-    CONSTRAINT fk_award_modified_by FOREIGN KEY (Last_Modified_By) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE,
-    CONSTRAINT fk_award_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT chk_award_original_dates CHECK (Original_End_Date >= Original_Start_Date)
 );
 
 -- Modification
@@ -261,8 +222,6 @@ CREATE TABLE Modification (
     Approval_Status VARCHAR(50) DEFAULT 'Pending',
     Approved_By_Personnel_ID VARCHAR(50),
     Approval_Date DATE,
-    Created_By_Personnel_ID VARCHAR(50) NOT NULL,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_event_type CHECK (Event_Type IN (
         'Initial Award','Incremental Funding','No Cost Extension',
         'Budget Revision','Scope Change','Personnel Change','Termination',
@@ -277,14 +236,10 @@ CREATE TABLE Modification (
         REFERENCES Personnel(Personnel_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    CONSTRAINT fk_mod_creator FOREIGN KEY (Created_By_Personnel_ID)
-        REFERENCES Personnel(Personnel_ID)
-        ON UPDATE CASCADE,
     CONSTRAINT fk_mod_affected_personnel FOREIGN KEY (Affected_Personnel_ID)
         REFERENCES Personnel(Personnel_ID)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_modification_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON UPDATE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- Terms
@@ -300,8 +255,6 @@ CREATE TABLE Terms (
     Publication_Requirements TEXT,
     Closeout_Requirements TEXT,
     Record_Retention_Years INT DEFAULT 3,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT chk_payment_method CHECK (Payment_Method IN (
         'Reimbursement','Advance','Cost-Reimbursement','Fixed-Price',
         'Letter-of-Credit','Payment-Request'
@@ -327,8 +280,6 @@ CREATE TABLE AwardBudgetPeriod (
     Total_Costs DECIMAL(18,2) DEFAULT 0,
     Cost_Share_Amount DECIMAL(18,2) DEFAULT 0,
     Status VARCHAR(50) DEFAULT 'Pending',
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_period_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
@@ -351,9 +302,6 @@ CREATE TABLE AwardBudget (
     Current_Direct_Cost DECIMAL(18,2),
     Current_Indirect_Cost DECIMAL(18,2),
     Current_Total_Cost DECIMAL(18,2),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Last_Modified_By VARCHAR(50),
     CONSTRAINT chk_award_budget_category CHECK (Budget_Category IN (
         'Senior Personnel','Other Personnel','Fringe Benefits','Equipment',
         'Travel','Participant Support','Other Direct Costs','Consultants',
@@ -367,8 +315,7 @@ CREATE TABLE AwardBudget (
         REFERENCES AwardBudgetPeriod(Period_ID)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    CONSTRAINT uq_award_budget_item UNIQUE (Award_ID, Period_ID, Budget_Category, Line_Item_Description),
-    CONSTRAINT fk_awardbudget_modified_by FOREIGN KEY (Last_Modified_By) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT uq_award_budget_item UNIQUE (Award_ID, Period_ID, Budget_Category, Line_Item_Description)
 );
 
 -- Subaward
@@ -385,9 +332,6 @@ CREATE TABLE Subaward (
     PI_Name VARCHAR(255),
     Monitoring_Plan TEXT,
     Risk_Level VARCHAR(20),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_subaward_status CHECK (Status IN ('Pending','Active','Closed','Terminated','Suspended')),
     CONSTRAINT chk_risk_level CHECK (Risk_Level IN ('Low','Medium','High')),
     CONSTRAINT fk_subaward_prime FOREIGN KEY (Prime_Award_ID)
@@ -397,8 +341,7 @@ CREATE TABLE Subaward (
     CONSTRAINT fk_subaward_org FOREIGN KEY (Subrecipient_Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON UPDATE CASCADE,
-    CONSTRAINT chk_subaward_date_range CHECK (End_Date IS NULL OR End_Date >= Start_Date),
-    CONSTRAINT fk_subaward_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT chk_subaward_date_range CHECK (End_Date IS NULL OR End_Date >= Start_Date)
 );
 
 -- CostShare
@@ -413,8 +356,6 @@ CREATE TABLE CostShare (
     Is_Mandatory BOOLEAN DEFAULT FALSE,
     Status VARCHAR(50) DEFAULT 'Committed',
     Met_Amount DECIMAL(18,2) DEFAULT 0,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT chk_commitment_type CHECK (Commitment_Type IN ('Cash','In-Kind','Third-Party','Waived IDC')),
     CONSTRAINT chk_costshare_status CHECK (Status IN ('Committed','In Progress','Met','Waived')),
     CONSTRAINT fk_costshare_award FOREIGN KEY (Award_ID)
@@ -444,8 +385,6 @@ CREATE TABLE Invoice (
     Submission_Date DATE,
     Payment_Date DATE,
     Payment_Amount DECIMAL(18,2),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_invoice_status CHECK (Status IN ('Draft','Submitted','Under Review','Approved','Paid','Rejected')),
     CONSTRAINT fk_invoice_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
@@ -455,8 +394,7 @@ CREATE TABLE Invoice (
         REFERENCES AwardBudgetPeriod(Period_ID)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
-    CONSTRAINT chk_invoice_period_range CHECK (Period_End_Date >= Period_Start_Date),
-    CONSTRAINT fk_invoice_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT chk_invoice_period_range CHECK (Period_End_Date >= Period_Start_Date)
 );
 
 -- AwardDeliverable
@@ -473,7 +411,6 @@ CREATE TABLE AwardDeliverable (
     Reviewed_By_Personnel_ID VARCHAR(50),
     Review_Date DATE,
     Comments TEXT,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_deliverable_type CHECK (Deliverable_Type IN (
         'Technical Progress Report','Financial Report','Annual Report',
         'Final Technical Report','Final Financial Report','Property Report',
@@ -512,9 +449,6 @@ CREATE TABLE ProjectRole (
     End_Date DATE,
     FTE_Percent DECIMAL(5,2),
     Salary_Charged DECIMAL(18,2),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_fte_percent CHECK (FTE_Percent IS NULL OR (FTE_Percent >= 0 AND FTE_Percent <= 100)),
     CONSTRAINT fk_role_project FOREIGN KEY (Project_ID)
         REFERENCES Project(Project_ID)
@@ -531,8 +465,7 @@ CREATE TABLE ProjectRole (
     CONSTRAINT fk_role_value FOREIGN KEY (Role_Value_ID)
         REFERENCES AllowedValues(Allowed_Value_ID)
         ON UPDATE CASCADE,
-    CONSTRAINT uq_project_role UNIQUE (Project_ID, Personnel_ID, Role_Value_ID, Start_Date),
-    CONSTRAINT fk_projectrole_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+    CONSTRAINT uq_project_role UNIQUE (Project_ID, Personnel_ID, Role_Value_ID, Start_Date)
 );
 
 -- Fund
@@ -541,8 +474,6 @@ CREATE TABLE Fund (
     Fund_Name VARCHAR(255) NOT NULL,
     Fund_Type_Value_ID INT,
     Organization_ID VARCHAR(50),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_fund_type FOREIGN KEY (Fund_Type_Value_ID)
         REFERENCES AllowedValues(Allowed_Value_ID)
         ON UPDATE CASCADE,
@@ -559,8 +490,6 @@ CREATE TABLE Account (
     Natural_Classification VARCHAR(100),
     Account_Type VARCHAR(50),
     Parent_Account_Code VARCHAR(20),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_account_type CHECK (Account_Type IN (
         'Expense','Revenue','Asset','Liability','Equity','Transfer'
     )),
@@ -577,9 +506,6 @@ CREATE TABLE FinanceCode (
     Award_ID VARCHAR(50),
     Purpose VARCHAR(100),
     Organization_ID VARCHAR(50),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_fincode_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE SET NULL
@@ -599,8 +525,6 @@ CREATE TABLE ActivityCode (
     Activity_Code VARCHAR(20) PRIMARY KEY,
     Activity_Name VARCHAR(255) NOT NULL,
     Activity_Type VARCHAR(50),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT chk_activity_type CHECK (Activity_Type IN (
         'Instruction','Research','Public Service','Academic Support',
         'Student Services','Institutional Support','Operations'
@@ -617,8 +541,6 @@ CREATE TABLE IndirectRate (
     Effective_End_Date DATE,
     Base_Type VARCHAR(50),
     Negotiated_Agreement_ID VARCHAR(50),
-    Is_Active BOOLEAN DEFAULT TRUE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_rate_org FOREIGN KEY (Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON DELETE CASCADE
@@ -655,8 +577,6 @@ CREATE TABLE Transaction (
     Personnel_ID VARCHAR(50),
     Reference_Number VARCHAR(100),
     Is_Reconciled BOOLEAN DEFAULT FALSE,
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_trans_type CHECK (Transaction_Type IN (
         'Expense','Revenue','Encumbrance','Transfer','Adjustment',
         'Reversal','Cost Share'
@@ -690,8 +610,7 @@ CREATE TABLE Transaction (
     CONSTRAINT fk_trans_personnel FOREIGN KEY (Personnel_ID)
         REFERENCES Personnel(Personnel_ID)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_transaction_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- Effort
@@ -710,8 +629,6 @@ CREATE TABLE Effort (
     Certification_Method VARCHAR(50),
     Requires_Prior_Approval BOOLEAN DEFAULT FALSE,
     Prior_Approval_Status VARCHAR(50),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT chk_effort_percent CHECK (Committed_Percent BETWEEN 0 AND 100),
     CONSTRAINT chk_actual_percent CHECK (Actual_Percent IS NULL OR (Actual_Percent BETWEEN 0 AND 100)),
     CONSTRAINT chk_certification_method CHECK (Certification_Method IN ('PAR','Activity Report','Timesheet','Other')),
@@ -741,9 +658,6 @@ CREATE TABLE ComplianceRequirement (
     Principal_Investigator_ID VARCHAR(50) NOT NULL,
     Approval_Body VARCHAR(100),
     Risk_Level VARCHAR(20),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Created_By_Personnel_ID VARCHAR(50),
     CONSTRAINT chk_requirement_type CHECK (Requirement_Type IN ('IRB','IACUC','IBC','COI','Radiation','Other')),
     CONSTRAINT chk_review_type CHECK (Review_Type IN ('Exempt','Expedited','Full Board','Not Human Subjects','Administrative')),
     CONSTRAINT chk_requirement_status CHECK (Status IN (
@@ -758,8 +672,7 @@ CREATE TABLE ComplianceRequirement (
         ON UPDATE CASCADE,
     CONSTRAINT fk_requirement_pi FOREIGN KEY (Principal_Investigator_ID)
         REFERENCES Personnel(Personnel_ID)
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_compliancereq_created_by FOREIGN KEY (Created_By_Personnel_ID) REFERENCES Personnel(Personnel_ID) ON DELETE SET NULL ON UPDATE CASCADE
+        ON UPDATE CASCADE
 );
 
 -- ConflictOfInterest
@@ -777,8 +690,6 @@ CREATE TABLE ConflictOfInterest (
     Status VARCHAR(50) DEFAULT 'Under Review',
     Review_Date DATE,
     Reviewed_By_Personnel_ID VARCHAR(50),
-    Date_Created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Last_Modified_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT chk_coi_status CHECK (Status IN (
         'Under Review','No Conflict','Manageable Conflict','Unmanageable Conflict',
         'Management Plan Required','Cleared'
