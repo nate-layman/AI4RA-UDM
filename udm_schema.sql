@@ -68,7 +68,7 @@ CREATE TABLE Contact (
 -- Project
 CREATE TABLE Project (
     Project_ID VARCHAR(50) PRIMARY KEY,
-    Title VARCHAR(500) NOT NULL,
+    Project_Title VARCHAR(500) NOT NULL,
     Acronym VARCHAR(50),
     Parent_Project_ID VARCHAR(50),
     Project_Type VARCHAR(50),
@@ -76,9 +76,9 @@ CREATE TABLE Project (
     Start_Date DATE NOT NULL,
     End_Date DATE,
     Lead_Organization_ID VARCHAR(50) NOT NULL,
-    Status VARCHAR(50) DEFAULT 'Active',
+    Project_Status VARCHAR(50) DEFAULT 'Active',
     CONSTRAINT chk_project_type CHECK (Project_Type IN ('Research','Training','Service','Clinical Trial','Fellowship','Infrastructure','Other')),
-    CONSTRAINT chk_project_status CHECK (Status IN ('Planning','Active','Completed','Suspended','Cancelled')),
+    CONSTRAINT chk_project_status CHECK (Project_Status IN ('Planning','Active','Completed','Suspended','Cancelled')),
     CONSTRAINT fk_project_parent FOREIGN KEY (Parent_Project_ID)
         REFERENCES Project(Project_ID)
         ON DELETE SET NULL
@@ -108,7 +108,7 @@ CREATE TABLE RFA (
 CREATE TABLE Proposal (
     Proposal_ID VARCHAR(50) PRIMARY KEY,
     Proposal_Number VARCHAR(100) UNIQUE,
-    Title VARCHAR(500) NOT NULL,
+    Proposal_Title VARCHAR(500) NOT NULL,
     Project_ID VARCHAR(50),
     Sponsor_Organization_ID VARCHAR(50) NOT NULL,
     RFA_ID VARCHAR(50),
@@ -167,7 +167,7 @@ CREATE TABLE ProposalBudget (
 CREATE TABLE Award (
     Award_ID VARCHAR(50) PRIMARY KEY,
     Award_Number VARCHAR(100) UNIQUE NOT NULL,
-    Title VARCHAR(500) NOT NULL,
+    Award_Title VARCHAR(500) NOT NULL,
     Project_ID VARCHAR(50) NOT NULL,
     Sponsor_Organization_ID VARCHAR(50) NOT NULL,
     RFA_ID VARCHAR(50),
@@ -177,12 +177,12 @@ CREATE TABLE Award (
     Current_Total_Funded DECIMAL(18,2) NOT NULL DEFAULT 0,
     Current_End_Date DATE NOT NULL,
     Total_Anticipated_Funding DECIMAL(18,2),
-    Status VARCHAR(50) DEFAULT 'Pending',
+    Award_Status VARCHAR(50) DEFAULT 'Pending',
     CFDA_Number VARCHAR(20),
     Federal_Award_ID VARCHAR(100),
     Prime_Sponsor_Organization_ID VARCHAR(50),
     Flow_Through_Indicator BOOLEAN DEFAULT FALSE,
-    CONSTRAINT chk_award_status CHECK (Status IN ('Pending','Active','Closed','Suspended','Terminated')),
+    CONSTRAINT chk_award_status CHECK (Award_Status IN ('Pending','Active','Closed','Suspended','Terminated')),
     CONSTRAINT fk_award_project FOREIGN KEY (Project_ID)
         REFERENCES Project(Project_ID)
         ON UPDATE CASCADE,
@@ -279,12 +279,12 @@ CREATE TABLE AwardBudgetPeriod (
     Indirect_Costs DECIMAL(18,2) DEFAULT 0,
     Total_Costs DECIMAL(18,2) DEFAULT 0,
     Cost_Share_Amount DECIMAL(18,2) DEFAULT 0,
-    Status VARCHAR(50) DEFAULT 'Pending',
+    Period_Status VARCHAR(50) DEFAULT 'Pending',
     CONSTRAINT fk_period_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
-    CONSTRAINT chk_period_status CHECK (Status IN ('Pending','Released','Active','Closed')),
+    CONSTRAINT chk_period_status CHECK (Period_Status IN ('Pending','Released','Active','Closed')),
     CONSTRAINT uq_award_period UNIQUE (Award_ID, Period_Number),
     CONSTRAINT chk_period_date_range CHECK (End_Date >= Start_Date)
 );
@@ -324,15 +324,15 @@ CREATE TABLE Subaward (
     Prime_Award_ID VARCHAR(50) NOT NULL,
     Subrecipient_Organization_ID VARCHAR(50) NOT NULL,
     Subaward_Number VARCHAR(100) UNIQUE,
-    Amount DECIMAL(18,2),
+    Subaward_Amount DECIMAL(18,2),
     Start_Date DATE,
     End_Date DATE,
-    Status VARCHAR(50) DEFAULT 'Active',
+    Subaward_Status VARCHAR(50) DEFAULT 'Active',
     Statement_of_Work TEXT,
     PI_Name VARCHAR(255),
     Monitoring_Plan TEXT,
     Risk_Level VARCHAR(20),
-    CONSTRAINT chk_subaward_status CHECK (Status IN ('Pending','Active','Closed','Terminated','Suspended')),
+    CONSTRAINT chk_subaward_status CHECK (Subaward_Status IN ('Pending','Active','Closed','Terminated','Suspended')),
     CONSTRAINT chk_risk_level CHECK (Risk_Level IN ('Low','Medium','High')),
     CONSTRAINT fk_subaward_prime FOREIGN KEY (Prime_Award_ID)
         REFERENCES Award(Award_ID)
@@ -354,10 +354,10 @@ CREATE TABLE CostShare (
     Source_Fund_Code VARCHAR(20),
     Source_Description VARCHAR(500),
     Is_Mandatory BOOLEAN DEFAULT FALSE,
-    Status VARCHAR(50) DEFAULT 'Committed',
+    CostShare_Status VARCHAR(50) DEFAULT 'Committed',
     Met_Amount DECIMAL(18,2) DEFAULT 0,
     CONSTRAINT chk_commitment_type CHECK (Commitment_Type IN ('Cash','In-Kind','Third-Party','Waived IDC')),
-    CONSTRAINT chk_costshare_status CHECK (Status IN ('Committed','In Progress','Met','Waived')),
+    CONSTRAINT chk_costshare_status CHECK (CostShare_Status IN ('Committed','In Progress','Met','Waived')),
     CONSTRAINT fk_costshare_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
@@ -381,11 +381,11 @@ CREATE TABLE Invoice (
     Indirect_Costs DECIMAL(18,2) DEFAULT 0,
     Cost_Share DECIMAL(18,2) DEFAULT 0,
     Total_Amount DECIMAL(18,2) NOT NULL,
-    Status VARCHAR(50) DEFAULT 'Draft',
+    Invoice_Status VARCHAR(50) DEFAULT 'Draft',
     Submission_Date DATE,
     Payment_Date DATE,
     Payment_Amount DECIMAL(18,2),
-    CONSTRAINT chk_invoice_status CHECK (Status IN ('Draft','Submitted','Under Review','Approved','Paid','Rejected')),
+    CONSTRAINT chk_invoice_status CHECK (Invoice_Status IN ('Draft','Submitted','Under Review','Approved','Paid','Rejected')),
     CONSTRAINT fk_invoice_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
@@ -406,7 +406,7 @@ CREATE TABLE AwardDeliverable (
     Deliverable_Number VARCHAR(50),
     Due_Date DATE NOT NULL,
     Submission_Date DATE,
-    Status VARCHAR(50) DEFAULT 'Pending',
+    Deliverable_Status VARCHAR(50) DEFAULT 'Pending',
     Responsible_Personnel_ID VARCHAR(50),
     Reviewed_By_Personnel_ID VARCHAR(50),
     Review_Date DATE,
@@ -418,7 +418,7 @@ CREATE TABLE AwardDeliverable (
         'Software Release','Clinical Trial Registration','Publication',
         'Presentation','Material Transfer','Other'
     )),
-    CONSTRAINT chk_deliverable_status CHECK (Status IN ('Pending','In Progress','Submitted','Accepted','Revision Required','Overdue')),
+    CONSTRAINT chk_deliverable_status CHECK (Deliverable_Status IN ('Pending','In Progress','Submitted','Accepted','Revision Required','Overdue')),
     CONSTRAINT fk_deliverable_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
@@ -565,7 +565,7 @@ CREATE TABLE Transaction (
     Transaction_Date DATE NOT NULL,
     Fiscal_Year INT,
     Fiscal_Period INT,
-    Amount DECIMAL(18,2) NOT NULL,
+    Transaction_Amount DECIMAL(18,2) NOT NULL,
     Transaction_Type VARCHAR(50),
     Description VARCHAR(500),
     Award_ID VARCHAR(50),
@@ -648,19 +648,19 @@ CREATE TABLE Effort (
 CREATE TABLE ComplianceRequirement (
     Requirement_ID VARCHAR(50) PRIMARY KEY,
     Requirement_Number VARCHAR(100) UNIQUE NOT NULL,
-    Title VARCHAR(500) NOT NULL,
+    Requirement_Title VARCHAR(500) NOT NULL,
     Requirement_Type VARCHAR(50) NOT NULL,
     Project_ID VARCHAR(50),
     Review_Type VARCHAR(50),
     Initial_Approval_Date DATE,
     Expiration_Date DATE,
-    Status VARCHAR(50) DEFAULT 'In Review',
+    Requirement_Status VARCHAR(50) DEFAULT 'In Review',
     Principal_Investigator_ID VARCHAR(50) NOT NULL,
     Approval_Body VARCHAR(100),
     Risk_Level VARCHAR(20),
     CONSTRAINT chk_requirement_type CHECK (Requirement_Type IN ('IRB','IACUC','IBC','COI','Radiation','Other')),
     CONSTRAINT chk_review_type CHECK (Review_Type IN ('Exempt','Expedited','Full Board','Not Human Subjects','Administrative')),
-    CONSTRAINT chk_requirement_status CHECK (Status IN (
+    CONSTRAINT chk_requirement_status CHECK (Requirement_Status IN (
         'Draft','Submitted','In Review','Approved','Expired',
         'Conditional Approval','Disapproved','Terminated','Suspended',
         'Closed'
@@ -687,10 +687,10 @@ CREATE TABLE ConflictOfInterest (
     Financial_Interest_Amount DECIMAL(18,2),
     Relationship_Description TEXT,
     Management_Plan TEXT,
-    Status VARCHAR(50) DEFAULT 'Under Review',
+    COI_Status VARCHAR(50) DEFAULT 'Under Review',
     Review_Date DATE,
     Reviewed_By_Personnel_ID VARCHAR(50),
-    CONSTRAINT chk_coi_status CHECK (Status IN (
+    CONSTRAINT chk_coi_status CHECK (COI_Status IN (
         'Under Review','No Conflict','Manageable Conflict','Unmanageable Conflict',
         'Management Plan Required','Cleared'
     )),
@@ -720,7 +720,7 @@ CREATE TABLE ConflictOfInterest (
 CREATE TABLE Document (
     Document_ID INT AUTO_INCREMENT PRIMARY KEY,
     Document_Type VARCHAR(50) NOT NULL,
-    Title VARCHAR(500),
+    Document_Title VARCHAR(500),
     Related_Entity_Type VARCHAR(50) NOT NULL,
     Related_Entity_ID VARCHAR(50) NOT NULL,
     File_Name VARCHAR(255),
@@ -732,7 +732,7 @@ CREATE TABLE Document (
     Uploaded_By_Personnel_ID VARCHAR(50),
     Version_Number INT DEFAULT 1,
     Is_Current_Version BOOLEAN DEFAULT TRUE,
-    Status VARCHAR(50) DEFAULT 'Active',
+    Document_Status VARCHAR(50) DEFAULT 'Active',
     Access_Level VARCHAR(50) DEFAULT 'Internal',
     Retention_Date DATE,
     Description TEXT,
@@ -748,7 +748,7 @@ CREATE TABLE Document (
         'Award','Proposal','Project','ComplianceRequirement','Subaward','Organization',
         'Personnel','Invoice','AwardDeliverable','COI'
     )),
-    CONSTRAINT chk_doc_status CHECK (Status IN ('Active','Archived','Deleted','Superseded')),
+    CONSTRAINT chk_doc_status CHECK (Document_Status IN ('Active','Archived','Deleted','Superseded')),
     CONSTRAINT chk_access_level CHECK (Access_Level IN ('Public','Internal','Restricted','Confidential')),
     CONSTRAINT fk_doc_uploader FOREIGN KEY (Uploaded_By_Personnel_ID)
         REFERENCES Personnel(Personnel_ID)
