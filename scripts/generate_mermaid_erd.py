@@ -102,14 +102,14 @@ def format_column_type(column: Dict) -> str:
 
     return data_type
 
-def generate_mermaid_erd(db_path: str = "AI4RA-UDM", max_columns: int = 8) -> str:
-    """Generate Mermaid ERD syntax from database schema"""
+def generate_mermaid_erd(db_path: str = "AI4RA-UDM") -> str:
+    """Generate Mermaid graph from database schema"""
 
     tables = get_tables(db_path)
     foreign_keys = get_foreign_keys(db_path)
 
-    # Start Mermaid ERD
-    mermaid = ["erDiagram"]
+    # Start Mermaid graph
+    mermaid = ["graph TD"]
 
     # Group tables by domain for better organization
     domain_groups = {
@@ -133,63 +133,8 @@ def generate_mermaid_erd(db_path: str = "AI4RA-UDM", max_columns: int = 8) -> st
         if table not in ordered_tables:
             ordered_tables.append(table)
 
-    # Generate table definitions with limited columns
-    for table in ordered_tables:
-        if table not in tables:
-            continue
-
-        columns = get_table_columns(table, db_path)
-
-        mermaid.append(f"\n    {table} {{")
-
-        # Always show primary key columns
-        pk_columns = [c for c in columns if c['column_key'] == 'PRI']
-        fk_columns = [c for c in columns if any(fk['table_name'] == table and fk['column_name'] == c['column_name'] for fk in foreign_keys)]
-        important_columns = [c for c in columns if c['column_name'] in ['Title', 'Name', 'Number', 'Status', 'Amount', 'Date']]
-
-        # Combine and deduplicate
-        shown_columns = []
-        shown_names = set()
-
-        # Add PKs first
-        for col in pk_columns:
-            if col['column_name'] not in shown_names:
-                shown_columns.append(col)
-                shown_names.add(col['column_name'])
-
-        # Add FKs
-        for col in fk_columns:
-            if col['column_name'] not in shown_names and len(shown_columns) < max_columns:
-                shown_columns.append(col)
-                shown_names.add(col['column_name'])
-
-        # Add important columns
-        for col in important_columns:
-            if col['column_name'] not in shown_names and len(shown_columns) < max_columns:
-                shown_columns.append(col)
-                shown_names.add(col['column_name'])
-
-        # Add remaining columns up to limit
-        for col in columns:
-            if col['column_name'] not in shown_names and len(shown_columns) < max_columns:
-                shown_columns.append(col)
-                shown_names.add(col['column_name'])
-
-        # Generate column lines
-        for col in shown_columns:
-            col_type = format_column_type(col)
-            pk_marker = " PK" if col['column_key'] == 'PRI' else ""
-            fk_marker = " FK" if any(fk['table_name'] == table and fk['column_name'] == col['column_name'] for fk in foreign_keys) else ""
-
-            mermaid.append(f"        {col_type} {col['column_name']}{pk_marker}{fk_marker}")
-
-        if len(columns) > max_columns:
-            mermaid.append(f"        string ... {len(columns) - max_columns} more columns")
-
-        mermaid.append("    }")
-
-    # Generate relationships
-    mermaid.append("\n    %% Relationships")
+    # Generate relationships (graph TD format uses arrows)
+    mermaid.append("")
 
     # Track relationships to avoid duplicates
     relationships_added = set()
@@ -203,7 +148,7 @@ def generate_mermaid_erd(db_path: str = "AI4RA-UDM", max_columns: int = 8) -> st
             continue
 
         # Create a unique key for this relationship
-        rel_key = f"{from_table}->{to_table}"
+        rel_key = f"{to_table}-->{from_table}"
 
         # Skip if we've already added this relationship
         if rel_key in relationships_added:
@@ -211,10 +156,8 @@ def generate_mermaid_erd(db_path: str = "AI4RA-UDM", max_columns: int = 8) -> st
 
         relationships_added.add(rel_key)
 
-        # Determine relationship cardinality
-        # For now, use standard ||--o{ (one-to-many) for all FKs
-        # Could be enhanced to detect one-to-one relationships
-        mermaid.append(f"    {to_table} ||--o{{ {from_table} : has")
+        # Graph format: referenced table --> referencing table
+        mermaid.append(f"    {to_table}-->{from_table}")
 
     return "\n".join(mermaid)
 
