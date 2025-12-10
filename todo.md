@@ -62,12 +62,3 @@
 - [x] Look at the udm_dashboard.md and make a todo list for that. Things like create the github action. Set up access on dolthub.
   - Created comprehensive dashboard_todo.md with 11 sections covering DoltHub setup, GitHub Actions, frontend development, and deployment.
 
-## 8. DataDictionary
-- [x] Update DataDictionary table to follow naming ontology (PascalCase table, Snake_Case columns)
-- [x] Create validation views to ensure DataDictionary stays in sync with schema
-- [ ] Populate initial DataDictionary values for all tables and columns
-- [ ] Add Schema_Domain categorizations (Reference, Core, PreAward, PostAward, Financial, Personnel, Compliance, System)
-- [ ] Create sync procedure to auto-populate missing entries
-- [ ] Add DataDictionary validation to testing protocol
-- [ ] Document DataDictionary schema and workflow in README
-
