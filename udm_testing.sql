@@ -284,7 +284,7 @@ SELECT 'Effort Test' as test_name, COUNT(*) as inserted_rows FROM Effort;
 -- ========================================
 -- 23. Test ComplianceRequirement
 -- ========================================
-INSERT INTO ComplianceRequirement (Requirement_ID, Requirement_Number, Requirement_Title, Requirement_Type, Project_ID, Review_Type, Initial_Approval_Date, Expiration_Date, Requirement_Status, Principal_Investigator_ID, Approval_Body, Risk_Level) VALUES
+INSERT INTO ComplianceRequirement (ComplianceRequirement_ID, Requirement_Number, Requirement_Title, Requirement_Type, Project_ID, Review_Type, Initial_Approval_Date, Expiration_Date, Requirement_Status, Principal_Investigator_ID, Approval_Body, Risk_Level) VALUES
 ('IRB001', 'IRB-2024-001', 'Human Subjects Research for AI Survey Study', 'IRB', 'PROJ001', 'Expedited', '2023-12-01', '2024-12-01', 'Approved', 'PER001', 'Institutional Review Board', 'Minimal');
 
 SELECT 'ComplianceRequirement Test' as test_name, COUNT(*) as inserted_rows FROM ComplianceRequirement;
