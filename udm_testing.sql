@@ -256,7 +256,7 @@ SELECT 'FinanceCode Test' as test_name, COUNT(*) as inserted_rows FROM FinanceCo
 -- ========================================
 -- 20. Test IndirectRate
 -- ========================================
-INSERT INTO IndirectRate (Organization_ID, Rate_Type, Rate_Percentage, Effective_Start_Date, Effective_End_Date, Base_Type, Negotiated_Agreement_ID) VALUES
+INSERT INTO IndirectRate (Applicable_Organization_ID, Rate_Type, Rate_Percentage, Effective_Start_Date, Effective_End_Date, Base_Type, Negotiated_Agreement_ID) VALUES
 ('UNI001', 'On-Campus', 53.50, '2024-01-01', '2026-12-31', 'MTDC', 'NICRA-2024'),
 ('UNI001', 'Off-Campus', 26.00, '2024-01-01', '2026-12-31', 'MTDC', 'NICRA-2024');
 
