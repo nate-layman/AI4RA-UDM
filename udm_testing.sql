@@ -205,17 +205,17 @@ SELECT 'CostShare Test' as test_name, COUNT(*) as inserted_rows FROM CostShare;
 -- ========================================
 -- 16. Test Invoice
 -- ========================================
-INSERT INTO Invoice (Invoice_ID, Award_ID, Invoice_Number, Period_ID, Invoice_Date, Period_Start_Date, Period_End_Date, Direct_Costs, Indirect_Costs, Total_Amount, Invoice_Status) VALUES
-('INV001', 'AWD001', 'UI-INV-2024-001', (SELECT Period_ID FROM AwardBudgetPeriod WHERE Award_ID = 'AWD001' AND Period_Number = 1), '2024-03-31', '2024-01-01', '2024-03-31', 37500.00, 12500.00, 50000.00,  'Submitted');
+INSERT INTO Invoice (Invoice_ID, Award_ID, Invoice_Number, AwardBudgetPeriod_ID, Invoice_Date, Period_Start_Date, Period_End_Date, Direct_Costs, Indirect_Costs, Total_Amount, Invoice_Status) VALUES
+('INV001', 'AWD001', 'UI-INV-2024-001', (SELECT AwardBudgetPeriod_ID FROM AwardBudgetPeriod WHERE Award_ID = 'AWD001' AND Period_Number = 1), '2024-03-31', '2024-01-01', '2024-03-31', 37500.00, 12500.00, 50000.00,  'Submitted');
 
 SELECT 'Invoice Test' as test_name, COUNT(*) as inserted_rows FROM Invoice;
 
 -- ========================================
 -- 17. Test AwardDeliverable
 -- ========================================
-INSERT INTO AwardDeliverable (Award_ID, Deliverable_Type, Period_ID, Deliverable_Number, Due_Date, Deliverable_Status, Responsible_Personnel_ID) VALUES
-('AWD001', 'Annual Report', (SELECT Period_ID FROM AwardBudgetPeriod WHERE Award_ID = 'AWD001' AND Period_Number = 1), 'AR-2024', '2024-12-31', 'Pending', 'PER001'),
-('AWD001', 'Technical Progress Report', (SELECT Period_ID FROM AwardBudgetPeriod WHERE Award_ID = 'AWD001' AND Period_Number = 1), 'TPR-Q1-2024', '2024-04-15', 'Submitted', 'PER001');
+INSERT INTO AwardDeliverable (Award_ID, Deliverable_Type, AwardBudgetPeriod_ID, Deliverable_Number, Due_Date, Deliverable_Status, Responsible_Personnel_ID) VALUES
+('AWD001', 'Annual Report', (SELECT AwardBudgetPeriod_ID FROM AwardBudgetPeriod WHERE Award_ID = 'AWD001' AND Period_Number = 1), 'AR-2024', '2024-12-31', 'Pending', 'PER001'),
+('AWD001', 'Technical Progress Report', (SELECT AwardBudgetPeriod_ID FROM AwardBudgetPeriod WHERE Award_ID = 'AWD001' AND Period_Number = 1), 'TPR-Q1-2024', '2024-04-15', 'Submitted', 'PER001');
 
 SELECT 'AwardDeliverable Test' as test_name, COUNT(*) as inserted_rows FROM AwardDeliverable;
 
