@@ -753,23 +753,12 @@ CREATE TABLE ConflictOfInterest (
 CREATE TABLE Document (
     Document_ID INT AUTO_INCREMENT PRIMARY KEY,
     Document_Type VARCHAR(50) NOT NULL,
-    Document_Title VARCHAR(500),
     Related_Entity_Type VARCHAR(50) NOT NULL,
     Related_Entity_ID VARCHAR(50) NOT NULL,
     File_Name VARCHAR(255),
     Storage_Location VARCHAR(500),
-    Storage_Key VARCHAR(500),
-    File_Size_KB INT,
-    MIME_Type VARCHAR(100),
-    Upload_Date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Uploaded_By_Personnel_ID VARCHAR(50),
     Version_Number INT DEFAULT 1,
-    Is_Current_Version BOOLEAN DEFAULT TRUE,
-    Document_Status VARCHAR(50) DEFAULT 'Active',
-    Access_Level VARCHAR(50) DEFAULT 'Internal',
-    Retention_Date DATE,
     Description TEXT,
-    Tags VARCHAR(500),
     CONSTRAINT chk_doc_type CHECK (Document_Type IN (
         'Proposal','Progress Report','Financial Report','Final Report',
         'Closeout Document','Award Notice','Modification','Correspondence',
@@ -780,13 +769,7 @@ CREATE TABLE Document (
     CONSTRAINT chk_entity_type CHECK (Related_Entity_Type IN (
         'Award','Proposal','Project','ComplianceRequirement','Subaward','Organization',
         'Personnel','Invoice','AwardDeliverable','COI'
-    )),
-    CONSTRAINT chk_doc_status CHECK (Document_Status IN ('Active','Archived','Deleted','Superseded')),
-    CONSTRAINT chk_access_level CHECK (Access_Level IN ('Public','Internal','Restricted','Confidential')),
-    CONSTRAINT fk_doc_uploader FOREIGN KEY (Uploaded_By_Personnel_ID)
-        REFERENCES Personnel(Personnel_ID)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
+    ))
 );
 
 -- ActivityLog

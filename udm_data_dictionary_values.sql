@@ -500,23 +500,12 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 -- ========================================
 ('Document_ID', 'Column', 'Document', 'Primary key for document', 'Doc ID', FALSE),
 ('Document_Type', 'Column', 'Document', 'Type of document (Proposal, Progress Report, Financial Report, Final Report, Closeout Document, Award Notice, Modification, Correspondence, Compliance Approval, Budget, SOW, Contract, Subaward, Invoice, Receipt, Data Submission, Software Release, Publication, Presentation, Other)', 'Type', FALSE),
-('Document_Title', 'Column', 'Document', 'Title or name of document', 'Title', FALSE),
 ('Related_Entity_Type', 'Column', 'Document', 'Type of entity document is related to (Award, Proposal, Project, ComplianceRequirement, Subaward, Organization, Personnel, Invoice, AwardDeliverable, COI)', 'Entity Type', FALSE),
 ('Related_Entity_ID', 'Column', 'Document', 'ID of related entity', 'Entity ID', FALSE),
 ('File_Name', 'Column', 'Document', 'Original filename', 'Filename', FALSE),
 ('Storage_Location', 'Column', 'Document', 'Storage location or path', 'Location, Path', FALSE),
-('Storage_Key', 'Column', 'Document', 'Storage key or identifier in storage system', 'Key, S3 Key', FALSE),
-('File_Size_KB', 'Column', 'Document', 'File size in kilobytes', 'Size', FALSE),
-('MIME_Type', 'Column', 'Document', 'MIME type of file', 'Content Type', FALSE),
-('Upload_Date', 'Column', 'Document', 'Date and time document was uploaded', 'Upload Time', FALSE),
-('Uploaded_By_Personnel_ID', 'Column', 'Document', 'Person who uploaded document', 'Uploader', FALSE),
 ('Version_Number', 'Column', 'Document', 'Version number for document versioning', 'Version', FALSE),
-('Is_Current_Version', 'Column', 'Document', 'Flag indicating if this is current version', 'Current', FALSE),
-('Document_Status', 'Column', 'Document', 'Status (Active, Archived, Deleted, Superseded)', 'Status', FALSE),
-('Access_Level', 'Column', 'Document', 'Access level (Public, Internal, Restricted, Confidential)', 'Security Level', FALSE),
-('Retention_Date', 'Column', 'Document', 'Date document can be deleted per retention policy', 'Delete Date', FALSE),
 ('Description', 'Column', 'Document', 'Description of document contents', 'Details', FALSE),
-('Tags', 'Column', 'Document', 'Comma-separated tags for categorization', 'Keywords, Labels', FALSE),
 
 -- ========================================
 -- ActivityLog Columns
