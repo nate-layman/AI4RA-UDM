@@ -744,6 +744,9 @@ CREATE TABLE Document (
     Related_Entity_ID VARCHAR(50) NOT NULL,
     File_Name VARCHAR(255),
     Storage_Location VARCHAR(500),
+    File_Size_Bytes BIGINT,
+    MIME_Type VARCHAR(255),
+    File_Hash VARCHAR(128),
     Version_Number INT DEFAULT 1,
     Description TEXT,
     CONSTRAINT fk_document_type FOREIGN KEY (Document_Type_Value_ID)

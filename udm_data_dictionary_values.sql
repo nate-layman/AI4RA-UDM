@@ -107,8 +107,6 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Allowed_Value_Code', 'Column', 'AllowedValues', 'Short code identifier for the value', 'Code, Key', FALSE),
 ('Allowed_Value_Label', 'Column', 'AllowedValues', 'Display label for the value in user interfaces', 'Label, Display Name', FALSE),
 ('Allowed_Value_Description', 'Column', 'AllowedValues', 'Detailed description of the value and its usage', 'Description', FALSE),
-('Parent_Value_ID', 'Column', 'AllowedValues', 'Reference to parent value for hierarchical allowed values', 'Parent ID', FALSE),
-('Display_Order', 'Column', 'AllowedValues', 'Sort order for displaying values in lists', 'Sort Order, Sequence', FALSE),
 
 -- ========================================
 -- BudgetCategory Columns
@@ -169,7 +167,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Project_Title', 'Column', 'Project', 'Full title of the project', 'Title', FALSE),
 ('Acronym', 'Column', 'Project', 'Short acronym or abbreviation for project', 'Short Name, Abbreviation', FALSE),
 ('Parent_Project_ID', 'Column', 'Project', 'Reference to parent project for sub-projects', 'Parent Project', FALSE),
-('Project_Type', 'Column', 'Project', 'Type of project (Research, Training, Service, Clinical Trial, Fellowship, Infrastructure, Other)', 'Type', FALSE),
+('Project_Type_Value_ID', 'Column', 'Project', 'Type of project from AllowedValues (Research, Training, Service, Clinical Trial, Fellowship, Infrastructure, Other)', 'Type', FALSE),
 ('Abstract', 'Column', 'Project', 'Abstract or summary description of project', 'Summary, Description', FALSE),
 ('Start_Date', 'Column', 'Project', 'Project start date', 'Begin Date', FALSE),
 ('End_Date', 'Column', 'Project', 'Project end date', 'Completion Date', FALSE),
@@ -257,7 +255,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Modification_ID', 'Column', 'Modification', 'Primary key for modification', 'Mod ID, Amendment ID', FALSE),
 ('Award_ID', 'Column', 'Modification', 'Award being modified', 'Award', FALSE),
 ('Modification_Number', 'Column', 'Modification', 'Sequential modification number', 'Mod Number, Amendment Number', FALSE),
-('Event_Type', 'Column', 'Modification', 'Type of modification event (Initial Award, Incremental Funding, No Cost Extension, Budget Revision, Scope Change, Personnel Change, Termination, Supplement, Carryforward, Administrative Change)', 'Type', FALSE),
+('Event_Type_Value_ID', 'Column', 'Modification', 'Type of modification event from AllowedValues (Initial Award, Incremental Funding, No Cost Extension, Budget Revision, Scope Change, Personnel Change, Termination, Supplement, Carryforward, Administrative Change)', 'Type', FALSE),
 ('Event_Timestamp', 'Column', 'Modification', 'Date and time modification was recorded in system', 'Timestamp', FALSE),
 ('Effective_Date', 'Column', 'Modification', 'Date modification becomes effective', 'Effective Date', FALSE),
 ('Funding_Amount_Change', 'Column', 'Modification', 'Change in funding amount (positive or negative)', 'Funding Change, Amount Change', FALSE),
@@ -370,7 +368,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 -- ========================================
 ('AwardDeliverable_ID', 'Column', 'AwardDeliverable', 'Primary key for award deliverable', 'Deliverable ID', FALSE),
 ('Award_ID', 'Column', 'AwardDeliverable', 'Award requiring deliverable', 'Award', FALSE),
-('Deliverable_Type', 'Column', 'AwardDeliverable', 'Type of deliverable (Technical Progress Report, Financial Report, Annual Report, Final Technical Report, Final Financial Report, Property Report, Invention Disclosure, Animal Welfare Report, Data Submission, Software Release, Clinical Trial Registration, Publication, Presentation, Material Transfer, Other)', 'Type', FALSE),
+('Deliverable_Type_Value_ID', 'Column', 'AwardDeliverable', 'Type of deliverable from AllowedValues (Technical Progress Report, Financial Report, Annual Report, Final Technical Report, Final Financial Report, Property Report, Invention Disclosure, Animal Welfare Report, Data Submission, Software Release, Clinical Trial Registration, Publication, Presentation, Material Transfer, Other)', 'Type', FALSE),
 ('AwardBudgetPeriod_ID', 'Column', 'AwardDeliverable', 'Budget period deliverable is due for', 'Period ID', FALSE),
 ('Deliverable_Number', 'Column', 'AwardDeliverable', 'Sequential deliverable number', 'Number', FALSE),
 ('Due_Date', 'Column', 'AwardDeliverable', 'Date deliverable is due', 'Due Date, Deadline', FALSE),
@@ -387,7 +385,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('ProjectRole_ID', 'Column', 'ProjectRole', 'Primary key for project role', 'Role ID', FALSE),
 ('Project_ID', 'Column', 'ProjectRole', 'Project this role belongs to', 'Project', FALSE),
 ('Personnel_ID', 'Column', 'ProjectRole', 'Person assigned to role', 'Person ID', FALSE),
-('Role_Value_ID', 'Column', 'ProjectRole', 'Role type from AllowedValues (PI, Co-PI, Co-I, etc.)', 'Role', FALSE),
+('Role_Value_ID', 'Column', 'ProjectRole', 'Role type from AllowedValues (PI, Co-PI, Co-I, Key Personnel, etc.)', 'Role', FALSE),
 ('Is_Key_Personnel', 'Column', 'ProjectRole', 'Flag indicating if this is key personnel', 'Key Personnel', FALSE),
 ('Funding_Award_ID', 'Column', 'ProjectRole', 'Award funding this role', 'Award', FALSE),
 ('Start_Date', 'Column', 'ProjectRole', 'Date person started in role', 'Begin Date', FALSE),
@@ -409,7 +407,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Account_Code', 'Column', 'Account', 'Primary key account code from chart of accounts', 'Account', FALSE),
 ('Account_Name', 'Column', 'Account', 'Descriptive name of account', 'Name', FALSE),
 ('Account_Category', 'Column', 'Account', 'Category of account describing the nature of the expense (e.g., Salaries, Supplies, Equipment, Travel)', 'Natural Classification, Category', FALSE),
-('Account_Type', 'Column', 'Account', 'Type of account (Expense, Revenue, Asset, Liability, Equity, Transfer)', 'Type', FALSE),
+('Account_Type', 'Column', 'Account', 'Type of account (Expense, Revenue, Asset, Liability, Equity)', 'Type', FALSE),
 ('Parent_Account_Code', 'Column', 'Account', 'Parent account for hierarchical chart of accounts', 'Parent Account', FALSE),
 
 -- ========================================
@@ -418,7 +416,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Finance_Code', 'Column', 'FinanceCode', 'Primary key finance code', 'Finance String, FOAP', FALSE),
 ('Finance_Name', 'Column', 'FinanceCode', 'Descriptive name of finance code', 'Name', FALSE),
 ('Award_ID', 'Column', 'FinanceCode', 'Award associated with finance code', 'Award', FALSE),
-('Purpose', 'Column', 'FinanceCode', 'Purpose of finance code (Direct Costs, Cost Share, Indirect Costs, Subcontract, Department Share, Program Income, Other)', 'Use', FALSE),
+('Purpose_Value_ID', 'Column', 'FinanceCode', 'Purpose of finance code from AllowedValues (Direct Costs, Cost Share, Indirect Costs, Subcontract, Department Share, Program Income, Other)', 'Use', FALSE),
 ('Organization_ID', 'Column', 'FinanceCode', 'Organization responsible for finance code', 'Org ID', FALSE),
 
 -- ========================================
@@ -432,7 +430,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Fiscal_Year', 'Column', 'Transaction', 'Fiscal year of transaction', 'FY', FALSE),
 ('Fiscal_Period', 'Column', 'Transaction', 'Fiscal period of transaction (typically 1-12 for months)', 'Period, Month', FALSE),
 ('Transaction_Amount', 'Column', 'Transaction', 'Dollar amount of transaction', 'Amount', FALSE),
-('Transaction_Type', 'Column', 'Transaction', 'Type of transaction (Expense, Revenue, Encumbrance, Transfer, Adjustment, Reversal, Cost Share)', 'Type', FALSE),
+('Transaction_Type_Value_ID', 'Column', 'Transaction', 'Type of transaction from AllowedValues (Expense, Revenue, Encumbrance, Transfer, Adjustment, Reversal, Cost Share)', 'Type', FALSE),
 ('Description', 'Column', 'Transaction', 'Description of transaction', 'Details, Memo', FALSE),
 ('Award_ID', 'Column', 'Transaction', 'Award transaction is associated with', 'Award', FALSE),
 ('Project_ID', 'Column', 'Transaction', 'Project transaction is associated with', 'Project', FALSE),
@@ -486,7 +484,7 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Project_ID', 'Column', 'ConflictOfInterest', 'Project disclosure relates to', 'Project', FALSE),
 ('Award_ID', 'Column', 'ConflictOfInterest', 'Award disclosure relates to', 'Award', FALSE),
 ('Disclosure_Date', 'Column', 'ConflictOfInterest', 'Date disclosure was made', 'Date', FALSE),
-('Relationship_Type', 'Column', 'ConflictOfInterest', 'Type of relationship (Financial, Consulting, Employment, Equity, Intellectual Property, Board Membership, Family, Other)', 'Type', FALSE),
+('Relationship_Type_Value_ID', 'Column', 'ConflictOfInterest', 'Type of relationship from AllowedValues (Financial, Consulting, Employment, Equity, Intellectual Property, Board Membership, Family, Other)', 'Type', FALSE),
 ('Entity_Name', 'Column', 'ConflictOfInterest', 'Name of entity involved in potential conflict', 'Company, Organization', FALSE),
 ('Financial_Interest_Amount', 'Column', 'ConflictOfInterest', 'Dollar value of financial interest', 'Amount', FALSE),
 ('Relationship_Description', 'Column', 'ConflictOfInterest', 'Description of relationship and potential conflict', 'Description', FALSE),
@@ -499,11 +497,14 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 -- Document Columns
 -- ========================================
 ('Document_ID', 'Column', 'Document', 'Primary key for document', 'Doc ID', FALSE),
-('Document_Type', 'Column', 'Document', 'Type of document (Proposal, Progress Report, Financial Report, Final Report, Closeout Document, Award Notice, Modification, Correspondence, Compliance Approval, Budget, SOW, Contract, Subaward, Invoice, Receipt, Data Submission, Software Release, Publication, Presentation, Other)', 'Type', FALSE),
-('Related_Entity_Type', 'Column', 'Document', 'Type of entity document is related to (Award, Proposal, Project, ComplianceRequirement, Subaward, Organization, Personnel, Invoice, AwardDeliverable, COI)', 'Entity Type', FALSE),
+('Document_Type_Value_ID', 'Column', 'Document', 'Type of document from AllowedValues (Proposal, Progress Report, Financial Report, Final Report, Closeout Document, Award Notice, Modification, Correspondence, Compliance Approval, Budget, SOW, Contract, Subaward, Invoice, Receipt, Data Submission, Software Release, Publication, Presentation, Other)', 'Type', FALSE),
+('Related_Entity_Type', 'Column', 'Document', 'Type of entity document is related to (Award, Proposal, Project, ComplianceRequirement, Subaward, Organization, Personnel, Invoice, AwardDeliverable, ConflictOfInterest)', 'Entity Type', FALSE),
 ('Related_Entity_ID', 'Column', 'Document', 'ID of related entity', 'Entity ID', FALSE),
 ('File_Name', 'Column', 'Document', 'Original filename', 'Filename', FALSE),
 ('Storage_Location', 'Column', 'Document', 'Storage location or path', 'Location, Path', FALSE),
+('File_Size_Bytes', 'Column', 'Document', 'File size in bytes', 'Size, File Size', FALSE),
+('MIME_Type', 'Column', 'Document', 'MIME type of document (e.g., application/pdf, image/jpeg)', 'Content Type, File Type', FALSE),
+('File_Hash', 'Column', 'Document', 'Cryptographic hash for file integrity verification (SHA-256, SHA-512, etc.)', 'Hash, Checksum', FALSE),
 ('Version_Number', 'Column', 'Document', 'Version number for document versioning', 'Version', FALSE),
 ('Description', 'Column', 'Document', 'Description of document contents', 'Details', FALSE),
 
