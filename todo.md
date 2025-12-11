@@ -5,7 +5,7 @@
 - [x] Once that's been done remove udm_data_dictionary_complete.sql
 - [x] What is ActivityCode table for? Should it be a table?
 - [ ] Review AllowedValues table. Maybe we should make that more granular
-- [ ] What is `Display_Order` in `BudgetCategory` table
+- [x] What is `Display_Order` in `BudgetCategory` table
 - [x] COI_Status should be ConflictOfInterest_Status to stick with naming scheme
 - [ ] Can there be multiple Is_Primary ContactDetails per project?
 - [ ] Document table is too complex

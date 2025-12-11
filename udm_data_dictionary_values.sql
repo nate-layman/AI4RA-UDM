@@ -117,7 +117,6 @@ INSERT IGNORE INTO DataDictionary (Entity, Entity_Type, Parent_Entity, Descripti
 ('Category_Code', 'Column', 'BudgetCategory', 'Short code for budget category', 'Code', FALSE),
 ('Category_Name', 'Column', 'BudgetCategory', 'Name of budget category (e.g., Personnel, Equipment, Travel)', 'Name', FALSE),
 ('Category_Description', 'Column', 'BudgetCategory', 'Description of what expenses belong in this category', 'Description', FALSE),
-('Display_Order', 'Column', 'BudgetCategory', 'Sort order for displaying categories', 'Sort Order, Sequence', FALSE),
 
 -- ========================================
 -- Organization Columns

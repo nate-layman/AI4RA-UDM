@@ -19,8 +19,7 @@ CREATE TABLE BudgetCategory (
     BudgetCategory_ID INT AUTO_INCREMENT PRIMARY KEY,
     Category_Code VARCHAR(50) UNIQUE NOT NULL,
     Category_Name VARCHAR(100) NOT NULL,
-    Category_Description TEXT,
-    Display_Order INT
+    Category_Description TEXT
 );
 
 -- Then create Organization (no external dependencies)
