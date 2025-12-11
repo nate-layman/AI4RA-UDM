@@ -5,13 +5,7 @@ CREATE TABLE AllowedValues (
     Allowed_Value_Code VARCHAR(50) NOT NULL,
     Allowed_Value_Label VARCHAR(255) NOT NULL,
     Allowed_Value_Description TEXT,
-    Parent_Value_ID INT,
-    Display_Order INT,
-    CONSTRAINT uq_value_code UNIQUE (Allowed_Value_Group, Allowed_Value_Code),
-    CONSTRAINT fk_value_parent FOREIGN KEY (Parent_Value_ID)
-        REFERENCES AllowedValues(Allowed_Value_ID)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
+    CONSTRAINT uq_value_code UNIQUE (Allowed_Value_Group, Allowed_Value_Code)
 );
 
 -- BudgetCategory reference table
@@ -121,14 +115,16 @@ CREATE TABLE Project (
     Project_Title VARCHAR(500) NOT NULL,
     Acronym VARCHAR(50),
     Parent_Project_ID VARCHAR(50),
-    Project_Type VARCHAR(50),
+    Project_Type_Value_ID INT,
     Abstract TEXT,
     Start_Date DATE NOT NULL,
     End_Date DATE,
     Lead_Organization_ID VARCHAR(50) NOT NULL,
     Project_Status VARCHAR(50) DEFAULT 'Active',
-    CONSTRAINT chk_project_type CHECK (Project_Type IN ('Research','Training','Service','Clinical Trial','Fellowship','Infrastructure','Other')),
     CONSTRAINT chk_project_status CHECK (Project_Status IN ('Planning','Active','Completed','Suspended','Cancelled')),
+    CONSTRAINT fk_project_type FOREIGN KEY (Project_Type_Value_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
+        ON UPDATE CASCADE,
     CONSTRAINT fk_project_parent FOREIGN KEY (Parent_Project_ID)
         REFERENCES Project(Project_ID)
         ON DELETE SET NULL
@@ -282,7 +278,7 @@ CREATE TABLE Modification (
     Modification_ID VARCHAR(50) PRIMARY KEY,
     Award_ID VARCHAR(50) NOT NULL,
     Modification_Number VARCHAR(20) NOT NULL,
-    Event_Type VARCHAR(50) NOT NULL,
+    Event_Type_Value_ID INT NOT NULL,
     Event_Timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Effective_Date DATE NOT NULL,
     Funding_Amount_Change DECIMAL(18,2) DEFAULT 0,
@@ -295,12 +291,10 @@ CREATE TABLE Modification (
     Approval_Status VARCHAR(50) DEFAULT 'Pending',
     Approved_By_Personnel_ID VARCHAR(50),
     Approval_Date DATE,
-    CONSTRAINT chk_event_type CHECK (Event_Type IN (
-        'Initial Award','Incremental Funding','No Cost Extension',
-        'Budget Revision','Scope Change','Personnel Change','Termination',
-        'Supplement','Carryforward','Administrative Change'
-    )),
     CONSTRAINT chk_approval_status CHECK (Approval_Status IN ('Pending','Approved','Rejected','Not Required')),
+    CONSTRAINT fk_mod_event_type FOREIGN KEY (Event_Type_Value_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
+        ON UPDATE CASCADE,
     CONSTRAINT fk_mod_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
@@ -474,7 +468,7 @@ CREATE TABLE Invoice (
 CREATE TABLE AwardDeliverable (
     AwardDeliverable_ID INT AUTO_INCREMENT PRIMARY KEY,
     Award_ID VARCHAR(50) NOT NULL,
-    Deliverable_Type VARCHAR(50) NOT NULL,
+    Deliverable_Type_Value_ID INT NOT NULL,
     AwardBudgetPeriod_ID INT,
     Deliverable_Number VARCHAR(50),
     Due_Date DATE NOT NULL,
@@ -484,14 +478,10 @@ CREATE TABLE AwardDeliverable (
     Reviewed_By_Personnel_ID VARCHAR(50),
     Review_Date DATE,
     Comments TEXT,
-    CONSTRAINT chk_deliverable_type CHECK (Deliverable_Type IN (
-        'Technical Progress Report','Financial Report','Annual Report',
-        'Final Technical Report','Final Financial Report','Property Report',
-        'Invention Disclosure','Animal Welfare Report','Data Submission',
-        'Software Release','Clinical Trial Registration','Publication',
-        'Presentation','Material Transfer','Other'
-    )),
     CONSTRAINT chk_deliverable_status CHECK (Deliverable_Status IN ('Pending','In Progress','Submitted','Accepted','Revision Required','Overdue')),
+    CONSTRAINT fk_deliverable_type FOREIGN KEY (Deliverable_Type_Value_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
+        ON UPDATE CASCADE,
     CONSTRAINT fk_deliverable_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE CASCADE
@@ -564,7 +554,7 @@ CREATE TABLE Account (
     Account_Type VARCHAR(50),
     Parent_Account_Code VARCHAR(20),
     CONSTRAINT chk_account_type CHECK (Account_Type IN (
-        'Expense','Revenue','Asset','Liability','Equity','Transfer'
+        'Expense','Revenue','Asset','Liability','Equity'
     )),
     CONSTRAINT fk_account_parent FOREIGN KEY (Parent_Account_Code)
         REFERENCES Account(Account_Code)
@@ -577,8 +567,11 @@ CREATE TABLE FinanceCode (
     Finance_Code VARCHAR(20) PRIMARY KEY,
     Finance_Name VARCHAR(255) NOT NULL,
     Award_ID VARCHAR(50),
-    Purpose VARCHAR(100),
+    Purpose_Value_ID INT,
     Organization_ID VARCHAR(50),
+    CONSTRAINT fk_fincode_purpose FOREIGN KEY (Purpose_Value_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
+        ON UPDATE CASCADE,
     CONSTRAINT fk_fincode_award FOREIGN KEY (Award_ID)
         REFERENCES Award(Award_ID)
         ON DELETE SET NULL
@@ -586,11 +579,7 @@ CREATE TABLE FinanceCode (
     CONSTRAINT fk_fincode_org FOREIGN KEY (Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT chk_purpose CHECK (Purpose IN (
-        'Direct Costs','Cost Share','Indirect Costs','Subcontract',
-        'Department Share','Program Income','Other'
-    ))
+        ON UPDATE CASCADE
 );
 
 -- Transaction
@@ -603,7 +592,7 @@ CREATE TABLE Transaction (
     Fiscal_Year INT,
     Fiscal_Period INT,
     Transaction_Amount DECIMAL(18,2) NOT NULL,
-    Transaction_Type VARCHAR(50),
+    Transaction_Type_Value_ID INT,
     Description VARCHAR(500),
     Award_ID VARCHAR(50),
     Project_ID VARCHAR(50),
@@ -614,10 +603,9 @@ CREATE TABLE Transaction (
     Personnel_ID VARCHAR(50),
     Reference_Number VARCHAR(100),
     Is_Reconciled BOOLEAN DEFAULT FALSE,
-    CONSTRAINT chk_trans_type CHECK (Transaction_Type IN (
-        'Expense','Revenue','Encumbrance','Transfer','Adjustment',
-        'Reversal','Cost Share'
-    )),
+    CONSTRAINT fk_trans_type FOREIGN KEY (Transaction_Type_Value_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
+        ON UPDATE CASCADE,
     CONSTRAINT fk_trans_fund FOREIGN KEY (Fund_Code)
         REFERENCES Fund(Fund_Code)
         ON UPDATE CASCADE,
@@ -715,7 +703,7 @@ CREATE TABLE ConflictOfInterest (
     Project_ID VARCHAR(50),
     Award_ID VARCHAR(50),
     Disclosure_Date DATE NOT NULL,
-    Relationship_Type VARCHAR(100),
+    Relationship_Type_Value_ID INT,
     Entity_Name VARCHAR(255),
     Financial_Interest_Amount DECIMAL(18,2),
     Relationship_Description TEXT,
@@ -727,10 +715,9 @@ CREATE TABLE ConflictOfInterest (
         'Under Review','No Conflict','Manageable Conflict','Unmanageable Conflict',
         'Management Plan Required','Cleared'
     )),
-    CONSTRAINT chk_relationship_type CHECK (Relationship_Type IN (
-        'Financial','Consulting','Employment','Equity','Intellectual Property',
-        'Board Membership','Family','Other'
-    )),
+    CONSTRAINT fk_coi_relationship_type FOREIGN KEY (Relationship_Type_Value_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
+        ON UPDATE CASCADE,
     CONSTRAINT fk_coi_personnel FOREIGN KEY (Personnel_ID)
         REFERENCES Personnel(Personnel_ID)
         ON DELETE CASCADE
@@ -752,23 +739,19 @@ CREATE TABLE ConflictOfInterest (
 -- Document
 CREATE TABLE Document (
     Document_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Document_Type VARCHAR(50) NOT NULL,
+    Document_Type_Value_ID INT NOT NULL,
     Related_Entity_Type VARCHAR(50) NOT NULL,
     Related_Entity_ID VARCHAR(50) NOT NULL,
     File_Name VARCHAR(255),
     Storage_Location VARCHAR(500),
     Version_Number INT DEFAULT 1,
     Description TEXT,
-    CONSTRAINT chk_doc_type CHECK (Document_Type IN (
-        'Proposal','Progress Report','Financial Report','Final Report',
-        'Closeout Document','Award Notice','Modification','Correspondence',
-        'Compliance Approval','Budget','SOW','Contract','Subaward',
-        'Invoice','Receipt','Data Submission','Software Release',
-        'Publication','Presentation','Other'
-    )),
+    CONSTRAINT fk_document_type FOREIGN KEY (Document_Type_Value_ID)
+        REFERENCES AllowedValues(Allowed_Value_ID)
+        ON UPDATE CASCADE,
     CONSTRAINT chk_entity_type CHECK (Related_Entity_Type IN (
         'Award','Proposal','Project','ComplianceRequirement','Subaward','Organization',
-        'Personnel','Invoice','AwardDeliverable','COI'
+        'Personnel','Invoice','AwardDeliverable','ConflictOfInterest'
     ))
 );
 
