@@ -36,7 +36,10 @@ The UDM follows consistent naming conventions throughout the schema:
 
 1. **Referential Integrity**: All foreign keys include proper constraints with CASCADE or SET NULL behaviors
 2. **Audit Trails**: Timestamps and user tracking on critical tables
-3. **Flexible Lookups**: `AllowedValues` table provides configurable controlled vocabularies
+3. **Flexible vs. Fixed Enumerations**:
+   - **AllowedValues** table for institution-specific lookups (contact types, project roles, fund types, transaction types, deliverable types, document types, etc.) that vary by institution or sponsor
+   - **CHECK constraints** for universal standards (GAAP account types, federal rate structures, status workflows) that should remain consistent across all deployments
+   - See [allowedvalues.md](allowedvalues.md) for complete documentation of this design pattern
 4. **Self-Referencing Hierarchies**: Support for organizational and project hierarchies
 5. **Comprehensive Financial Tracking**: Detailed budget periods, transactions, and cost tracking
 6. **Compliance Support**: Built-in tables for IRB, IACUC, COI, and other regulatory requirements
@@ -73,7 +76,7 @@ Organization foreign keys are named based on their role in each context rather t
 ### Tables Summary
 
 #### Reference Tables
-- **AllowedValues**: Configurable controlled vocabularies for enums throughout the schema
+- **AllowedValues**: Institution-specific lookup values for flexible enumerations (10 uses: contact types, project roles, fund types, transaction types, modification events, deliverable types, project types, finance purposes, COI relationships, document types)
 - **BudgetCategory**: Standardized budget categories (Senior Personnel, Equipment, Travel, etc.)
 - **Organization**: Organizational units including departments, sponsors, vendors, etc.
 
