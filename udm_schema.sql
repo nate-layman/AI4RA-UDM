@@ -95,14 +95,14 @@ CREATE TABLE ContactDetails (
 -- IndirectRate (moved here because ProposalBudget references it)
 CREATE TABLE IndirectRate (
     IndirectRate_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Applicable_Organization_ID VARCHAR(50) NOT NULL,
+    Organization_ID VARCHAR(50) NOT NULL,
     Rate_Type VARCHAR(50),
     Rate_Percentage DECIMAL(5,2) NOT NULL,
     Effective_Start_Date DATE NOT NULL,
     Effective_End_Date DATE,
     Base_Type VARCHAR(50),
     Negotiated_Agreement_ID VARCHAR(50),
-    CONSTRAINT fk_rate_org FOREIGN KEY (Applicable_Organization_ID)
+    CONSTRAINT fk_rate_org FOREIGN KEY (Organization_ID)
         REFERENCES Organization(Organization_ID)
         ON DELETE CASCADE
         ON UPDATE CASCADE,
@@ -561,7 +561,7 @@ CREATE TABLE Fund (
 CREATE TABLE Account (
     Account_Code VARCHAR(20) PRIMARY KEY,
     Account_Name VARCHAR(255) NOT NULL,
-    Natural_Classification VARCHAR(100),
+    Account_Category VARCHAR(100),
     Account_Type VARCHAR(50),
     Parent_Account_Code VARCHAR(20),
     CONSTRAINT chk_account_type CHECK (Account_Type IN (
@@ -594,24 +594,12 @@ CREATE TABLE FinanceCode (
     ))
 );
 
--- ActivityCode
-CREATE TABLE ActivityCode (
-    Activity_Code VARCHAR(20) PRIMARY KEY,
-    Activity_Name VARCHAR(255) NOT NULL,
-    Activity_Type VARCHAR(50),
-    CONSTRAINT chk_activity_type CHECK (Activity_Type IN (
-        'Instruction','Research','Public Service','Academic Support',
-        'Student Services','Institutional Support','Operations'
-    ))
-);
-
 -- Transaction
 CREATE TABLE Transaction (
     Transaction_ID VARCHAR(50) PRIMARY KEY,
     Fund_Code VARCHAR(20) NOT NULL,
     Account_Code VARCHAR(20) NOT NULL,
     Finance_Code VARCHAR(20),
-    Activity_Code VARCHAR(20),
     Transaction_Date DATE NOT NULL,
     Fiscal_Year INT,
     Fiscal_Period INT,
@@ -639,10 +627,6 @@ CREATE TABLE Transaction (
         ON UPDATE CASCADE,
     CONSTRAINT fk_trans_fincode FOREIGN KEY (Finance_Code)
         REFERENCES FinanceCode(Finance_Code)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE,
-    CONSTRAINT fk_trans_activity FOREIGN KEY (Activity_Code)
-        REFERENCES ActivityCode(Activity_Code)
         ON DELETE SET NULL
         ON UPDATE CASCADE,
     CONSTRAINT fk_trans_award FOREIGN KEY (Award_ID)
@@ -737,10 +721,10 @@ CREATE TABLE ConflictOfInterest (
     Financial_Interest_Amount DECIMAL(18,2),
     Relationship_Description TEXT,
     Management_Plan TEXT,
-    COI_Status VARCHAR(50) DEFAULT 'Under Review',
+    ConflictOfInterest_Status VARCHAR(50) DEFAULT 'Under Review',
     Review_Date DATE,
     Reviewed_By_Personnel_ID VARCHAR(50),
-    CONSTRAINT chk_coi_status CHECK (COI_Status IN (
+    CONSTRAINT chk_conflictofinterest_status CHECK (ConflictOfInterest_Status IN (
         'Under Review','No Conflict','Manageable Conflict','Unmanageable Conflict',
         'Management Plan Required','Cleared'
     )),
