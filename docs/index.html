@@ -693,6 +693,13 @@
 
             const $ = go.GraphObject.make;
 
+            // Track state explicitly for each table name
+            // States: 'none', 'selected', 'parent', 'child', 'dim'
+            const tableStates = new Map();
+
+            // Track currently selected node for toggle behavior
+            let currentlySelectedNode = null;
+
             // Create diagram
             const diagram = $(go.Diagram, 'erd-diagram', {
                 'undoManager.isEnabled': true,
@@ -701,23 +708,45 @@
                     layerSpacing: 50,
                     columnSpacing: 30,
                     setsPortSpots: false
-                })
+                }),
+                // Click on background to reset highlighting
+                'clickCreatingTool.isEnabled': false,
+                'BackgroundSingleClicked': function(e) {
+                    currentlySelectedNode = null;
+                    resetHighlighting(diagram, tableStates);
+                }
             });
 
             // Define node template (database tables)
             diagram.nodeTemplate =
                 $(go.Node, 'Auto',
+                    {
+                        click: function(e, node) {
+                            // If clicking the same node, reset highlighting
+                            if (currentlySelectedNode === node) {
+                                currentlySelectedNode = null;
+                                resetHighlighting(diagram, tableStates);
+                            } else {
+                                // Otherwise, highlight this node and its connections
+                                currentlySelectedNode = node;
+                                highlightConnected(diagram, node, tableStates);
+                            }
+                        }
+                    },
                     $(go.Shape, 'RoundedRectangle', {
                         fill: 'white',
                         stroke: '#667eea',
-                        strokeWidth: 2
+                        strokeWidth: 2,
+                        name: 'SHAPE'
                     }),
                     $(go.Panel, 'Vertical',
                         $(go.TextBlock, {
                             margin: 8,
                             font: 'bold 14px sans-serif',
-                            stroke: '#2c3e50'
-                        }, new go.Binding('text', 'key'))
+                            stroke: '#2c3e50',
+                            name: 'TEXT'
+                        },
+                        new go.Binding('text', 'key'))
                     )
                 );
 
@@ -729,13 +758,24 @@
                         curve: go.Link.JumpOver,
                         corner: 5
                     },
-                    $(go.Shape, { strokeWidth: 1.5, stroke: '#95a5a6' }),
-                    $(go.Shape, { toArrow: 'OpenTriangle', stroke: '#667eea', fill: '#667eea' }),
+                    $(go.Shape, {
+                        strokeWidth: 1.5,
+                        stroke: '#95a5a6',
+                        name: 'SHAPE'
+                    }),
+                    $(go.Shape, {
+                        toArrow: 'OpenTriangle',
+                        stroke: '#667eea',
+                        fill: '#667eea',
+                        name: 'ARROW'
+                    }),
                     $(go.TextBlock, {
                         segmentOffset: new go.Point(0, -10),
                         font: '10px sans-serif',
-                        stroke: '#546e7a'
-                    }, new go.Binding('text', 'relationship'))
+                        stroke: '#546e7a',
+                        name: 'TEXT'
+                    },
+                    new go.Binding('text', 'relationship'))
                 );
 
             // Build node data from data dictionary
@@ -753,7 +793,177 @@
             // Set model
             diagram.model = new go.GraphLinksModel(nodeDataArray, linkDataArray);
 
+            // Initialize all table states to 'none'
+            diagram.nodes.each(node => {
+                tableStates.set(node.data.key, 'none');
+            });
+
             console.log('[DEBUG] GoJS ERD rendered with', nodeDataArray.length, 'nodes and', linkDataArray.length, 'links');
+            console.log('[DEBUG] Initialized table states:', tableStates.size, 'tables');
+        }
+
+        // Highlight node and its directly connected nodes/links using explicit state management
+        // with color-coded parent (blue) vs child (orange) relationships
+        function highlightConnected(diagram, selectedNode, tableStates) {
+            diagram.startTransaction('highlight');
+
+            // STEP 1: Reset ALL table states to 'dim' first
+            diagram.nodes.each(node => {
+                tableStates.set(node.data.key, 'dim');
+            });
+
+            // STEP 2: Set the selected node to 'selected'
+            tableStates.set(selectedNode.data.key, 'selected');
+
+            // STEP 3: Set parent nodes (blue) - tables that THIS table references
+            selectedNode.findNodesOutOf().each(node => {
+                tableStates.set(node.data.key, 'parent');
+            });
+
+            // STEP 4: Set child nodes (orange) - tables that reference THIS table
+            selectedNode.findNodesInto().each(node => {
+                tableStates.set(node.data.key, 'child');
+            });
+
+            // STEP 5: Apply visual changes to ALL nodes based on state
+            diagram.nodes.each(node => {
+                const state = tableStates.get(node.data.key);
+                applyNodeState(node, state);
+            });
+
+            // STEP 6: Apply visual changes to ALL links based on connected node states
+            diagram.links.each(link => {
+                const fromState = tableStates.get(link.data.from);
+                const toState = tableStates.get(link.data.to);
+
+                // Link is highlighted if it connects selected to parent or child
+                if (fromState === 'selected' && toState === 'parent') {
+                    applyLinkState(link, 'parent');
+                } else if (fromState === 'child' && toState === 'selected') {
+                    applyLinkState(link, 'child');
+                } else if (fromState === 'selected' || toState === 'selected' || fromState === 'parent' || fromState === 'child' || toState === 'parent' || toState === 'child') {
+                    applyLinkState(link, 'highlight');
+                } else {
+                    applyLinkState(link, 'dim');
+                }
+            });
+
+            diagram.commitTransaction('highlight');
+        }
+
+        // Reset all highlighting - set all states to 'none'
+        function resetHighlighting(diagram, tableStates) {
+            diagram.startTransaction('reset highlight');
+
+            // STEP 1: Set ALL table states to 'none'
+            diagram.nodes.each(node => {
+                tableStates.set(node.data.key, 'none');
+            });
+
+            // STEP 2: Apply visual changes to ALL nodes
+            diagram.nodes.each(node => {
+                applyNodeState(node, 'none');
+            });
+
+            // STEP 3: Apply visual changes to ALL links
+            diagram.links.each(link => {
+                applyLinkState(link, 'none');
+            });
+
+            diagram.commitTransaction('reset highlight');
+        }
+
+        // Apply visual properties to a node based on its state
+        function applyNodeState(node, state) {
+            const shape = node.findObject('SHAPE');
+            const text = node.findObject('TEXT');
+
+            if (!shape || !text) return;
+
+            // Set stroke color, fill color, stroke width, and opacity based on state
+            if (state === 'selected') {
+                shape.stroke = '#764ba2';  // Purple
+                shape.fill = '#f0e6ff';    // Light purple
+                shape.strokeWidth = 3;
+                shape.opacity = 1;
+                text.opacity = 1;
+            } else if (state === 'parent') {
+                shape.stroke = '#4A90E2';  // Blue
+                shape.fill = '#e3f2fd';    // Light blue
+                shape.strokeWidth = 3;
+                shape.opacity = 1;
+                text.opacity = 1;
+            } else if (state === 'child') {
+                shape.stroke = '#e67e22';  // Orange
+                shape.fill = '#fff3e0';    // Light orange
+                shape.strokeWidth = 3;
+                shape.opacity = 1;
+                text.opacity = 1;
+            } else if (state === 'dim') {
+                shape.stroke = '#667eea';  // Default
+                shape.fill = 'white';
+                shape.strokeWidth = 2;
+                shape.opacity = 0.15;      // Dimmed
+                text.opacity = 0.15;       // Dimmed
+            } else {  // state === 'none'
+                shape.stroke = '#667eea';  // Default
+                shape.fill = 'white';
+                shape.strokeWidth = 2;
+                shape.opacity = 1;
+                text.opacity = 1;
+            }
+        }
+
+        // Apply visual properties to a link based on its state
+        function applyLinkState(link, state) {
+            const shape = link.findObject('SHAPE');
+            const arrow = link.findObject('ARROW');
+            const text = link.findObject('TEXT');
+
+            if (!shape || !arrow || !text) return;
+
+            // Set stroke color, stroke width, and opacity based on state
+            if (state === 'parent') {
+                shape.stroke = '#4A90E2';     // Blue
+                shape.strokeWidth = 2.5;
+                shape.opacity = 1;
+                arrow.stroke = '#4A90E2';
+                arrow.fill = '#4A90E2';
+                arrow.opacity = 1;
+                text.opacity = 1;
+            } else if (state === 'child') {
+                shape.stroke = '#e67e22';     // Orange
+                shape.strokeWidth = 2.5;
+                shape.opacity = 1;
+                arrow.stroke = '#e67e22';
+                arrow.fill = '#e67e22';
+                arrow.opacity = 1;
+                text.opacity = 1;
+            } else if (state === 'highlight') {
+                shape.stroke = '#95a5a6';     // Gray (but highlighted)
+                shape.strokeWidth = 1.5;
+                shape.opacity = 1;
+                arrow.stroke = '#667eea';
+                arrow.fill = '#667eea';
+                arrow.opacity = 1;
+                text.opacity = 1;
+            } else if (state === 'dim') {
+                shape.stroke = '#95a5a6';     // Default gray
+                shape.strokeWidth = 1.5;
+                shape.opacity = 0.1;           // Dimmed
+                arrow.stroke = '#667eea';
+                arrow.fill = '#667eea';
+                arrow.opacity = 0.1;           // Dimmed
+                text.opacity = 0.1;            // Dimmed
+            } else {  // state === 'none'
+                shape.stroke = '#95a5a6';     // Default gray
+                shape.strokeWidth = 1.5;
+                shape.opacity = 1;
+                arrow.stroke = '#667eea';
+                arrow.fill = '#667eea';
+                arrow.opacity = 1;
+                text.opacity = 1;
+            }
         }
     </script>
     </div> <!-- Close tab-dictionary container -->
@@ -763,7 +973,21 @@
     <div id="tab-erd" class="tab-content">
         <div style="padding: 1rem; background: white;">
             <div style="margin-bottom: 1rem; padding: 1rem; background: #f8f9fa; border-radius: 4px;">
-                <p style="margin: 0; color: #546e7a;">Interactive Entity Relationship Diagram showing table relationships and foreign keys. Drag nodes to rearrange. Uses GoJS (evaluation version).</p>
+                <p style="margin: 0 0 0.75rem 0; color: #546e7a;">Interactive Entity Relationship Diagram showing table relationships and foreign keys. <strong>Click any table</strong> to highlight its relationships. Drag nodes to rearrange.</p>
+                <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 16px; height: 16px; background: #f0e6ff; border: 2px solid #764ba2; border-radius: 3px;"></div>
+                        <span style="color: #546e7a; font-size: 0.9rem;">Selected Table</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 16px; height: 16px; background: #e3f2fd; border: 2px solid #4A90E2; border-radius: 3px;"></div>
+                        <span style="color: #546e7a; font-size: 0.9rem;">Parents (this table references)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 16px; height: 16px; background: #fff3e0; border: 2px solid #e67e22; border-radius: 3px;"></div>
+                        <span style="color: #546e7a; font-size: 0.9rem;">Children (reference this table)</span>
+                    </div>
+                </div>
             </div>
             <div id="erd-diagram" style="width: 100%; height: calc(100vh - 280px); background: white; border: 1px solid #e9ecef; border-radius: 8px;"></div>
         </div>
