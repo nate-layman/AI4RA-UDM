@@ -1,15 +1,144 @@
-# UDM Dashboard Visualization Plan
+# UDM Data Dictionary Browser
 
-## Organization-Centric View
+An interactive web-based browser for exploring the Universal Data Model (UDM) schema.
 
-### Concept
+## Current Implementation: Data Dictionary Browser
+
+### Overview
+
+The UDM Data Dictionary Browser provides an intuitive way to navigate and understand the database schema by displaying table definitions with field-by-field descriptions and enabling drill-down navigation through foreign key relationships.
+
+### Design Principles
+
+1. **Simplicity First**: Don't overwhelm the user - show one table at a time
+2. **Progressive Disclosure**: Start with core tables, enable exploration through clicking
+3. **Bidirectional Navigation**: Navigate up (to parents) via FK fields, navigate down (to children) via related table cards
+4. **"Contains" Mental Model**: Show child tables to match intuitive "X contains Y" thinking
+5. **Breadcrumb Navigation**: Clear navigation path with easy backtracking
+6. **Self-Referential Handling**: Don't add duplicate entries to navigation when clicking self-referential foreign keys
+
+### Features
+
+#### Home Page
+- **Getting Started Section**: Clear instructions on how to use the browser
+- **Entry Points**: Four distinct tracks into the data model (Organization, Project, Personnel, Transaction) presented as clickable cards with:
+  - Color-coded borders matching the original theme
+  - Brief descriptions
+  - Hover effects for better UX
+  - Each represents a different pathway through the data (organizational, research, people, financial)
+
+#### Table View
+- **Header**: Table name and description from data dictionary
+- **Two-Column Layout**:
+  - **Field Name**: Displayed in monospace font for clarity
+  - **Description**: Field-level documentation from data dictionary
+- **Foreign Key Navigation (Up)**: FK fields shown in blue with dotted underline, clickable to navigate to parent tables
+- **Related Tables Navigation (Down)**: Section below fields showing child tables (tables that reference this table) as clickable cards
+- **PII Indicators**: Red badges marking Personally Identifiable Information fields
+- **Breadcrumb Trail**: Full navigation path with clickable history
+
+#### Navigation Behavior
+1. **Entry Points**: Click an entry point card from home (Organization, Project, Personnel, Transaction) → navigate to that table
+2. **Navigate Up (to parents)**: Click a foreign key field (blue, dotted underline) → navigate to the referenced parent table
+3. **Navigate Down (to children)**: Click a related table card below the field list → navigate to a child table that references the current table
+4. **Breadcrumb Navigation**: Click any breadcrumb link → jump back to that point in history
+5. **Return Home**: Click "Home" → return to starting page
+6. **Self-Referential Handling**: Self-referential FKs don't create duplicate breadcrumb entries
+
+### Implementation
+
+#### Architecture
+- **Static Site**: No backend required, can be hosted on GitHub Pages
+- **JSON Data Files**: Pre-generated from SQL schema files
+- **Client-Side Rendering**: JavaScript builds table views dynamically
+
+#### Data Sources
+1. **data-dictionary.json**: Generated from `udm_data_dictionary_values.sql`
+   - Table descriptions
+   - Column descriptions
+   - Synonyms
+   - PII flags
+
+2. **relationships.json**: Generated from `udm_schema.sql`
+   - Forward relationships (FK constraints)
+   - Used to identify clickable fields (navigate up to parents)
+   - Reverse relationships built client-side to show child tables (navigate down)
+
+#### Generation Scripts
+1. **parse_data_dictionary.py**: Parses `udm_data_dictionary_values.sql` to extract descriptions
+2. **parse_schema.py**: Parses `udm_schema.sql` to extract relationships
+3. **analyze_coverage.py**: Analyzes table reachability via forward and reverse relationships
+
+#### Coverage Analysis
+With bidirectional navigation (FK fields + reverse relationships):
+- **Organization** alone reaches 28/29 tables (96.6%) with 11 child tables
+- **Project** alone reaches 28/29 tables (96.6%) with 6 child tables
+- **Personnel** alone reaches 28/29 tables (96.6%) with 8 child tables
+- Only **ActivityLog** is unreachable (isolated structural table)
+- Current 4 entry points provide 100% coverage of domain-meaningful tables
+
+#### Color Scheme
+Preserved from original visualization:
+- **Organization**: Blue (#4A90E2)
+- **Project**: Purple (#BD10E0)
+- **Personnel**: Orange (#F5A623)
+- **Transaction**: Green (#7ED321) - Financial track
+- **Primary Gradient**: Purple gradient (#667eea → #764ba2)
+
+### Usage
+
+#### Local Development
+```bash
+# Generate data files
+python3 scripts/parse_data_dictionary.py
+python3 scripts/parse_schema.py
+
+# Start local web server (required for CORS)
+cd docs
+python3 -m http.server 8000
+
+# Open browser
+open http://localhost:8000
+```
+
+#### Deployment
+Deploy the `docs/` directory to any static hosting service (GitHub Pages, Netlify, etc.)
+
+### Files
+
+- **docs/index.html**: Main application
+- **docs/data/data-dictionary.json**: Table and column descriptions
+- **docs/data/relationships.json**: Foreign key relationships
+- **scripts/parse_data_dictionary.py**: Data dictionary parser
+- **scripts/parse_schema.py**: Schema parser (generates relationships.json)
+- **scripts/analyze_coverage.py**: Coverage analysis tool
+- **udm_data_dictionary_values.sql**: Source data for descriptions
+- **udm_schema.sql**: Source data for schema structure
+
+### Future Enhancements
+
+Potential improvements:
+- Search functionality to find tables/fields by name
+- Filter by PII status
+- Show reverse relationships (what tables reference this one)
+- Export table documentation to PDF/Markdown
+- Deep linking with URL parameters (e.g., `?table=Organization`)
+- Mobile-responsive optimizations
+
+---
+
+## Data Model Structure
+
+### Organization-Centric View
+
+#### Concept
 The most natural way to understand research administration is through **Organizations** and their multiple roles:
 - Sponsors give money
 - Departments receive and manage money
 - Subrecipients receive portions of money
 - People belong to organizations and work on projects
 
-### Main View - The Hub
+#### Main View - The Hub
 
 ```
                         ┌─────────────────┐
@@ -38,7 +167,7 @@ The most natural way to understand research administration is through **Organiza
                     └──────────────────────┘
 ```
 
-## Tier 1: Always Visible (Main Tables)
+## Tier 1: Core Tables (Always Visible)
 
 ### 1. Organization (Center Hub)
 **Display:**
@@ -309,7 +438,7 @@ The most natural way to understand research administration is through **Organiza
 
 ---
 
-## Tier 3: Supporting Infrastructure (Toggle Layer)
+## Tier 3: Supporting Infrastructure
 
 ### Proposal Flow (Pre-Award Process)
 ```
@@ -364,10 +493,10 @@ The most natural way to understand research administration is through **Organiza
 - Account_Category
 - Parent_Account_Code (hierarchical)
 
-**Transaction** (Already described under Award)
+**Transaction**
 - Links: Fund, Account, FinanceCode, Award, Project
 
-**FinanceCode** (Already described under Award)
+**FinanceCode**
 - Award-specific accounting codes
 
 ### Reference & Metadata Tables
@@ -400,308 +529,47 @@ The most natural way to understand research administration is through **Organiza
 - Base_Type (MTDC, TDC, Salaries and Wages)
 - Negotiated_Agreement_ID
 
-**ActivityLog** (Audit Trail)
-- Table_Name, Record_ID
-- Action_Type (INSERT, UPDATE, DELETE, SELECT)
-- Action_Timestamp
-- User_ID, Session_ID, IP_Address
-- Old_Values, New_Values (change tracking)
-
 ---
 
-## Visual Design Specifications
+## Alternative View: Graph Visualization (Previous Implementation)
 
-### Node Colors
-- **Blue (#4A90E2):** Organization (all types)
-- **Green (#7ED321):** Award (active money)
-- **Purple (#BD10E0):** Project (research)
-- **Orange (#F5A623):** Personnel (people)
-- **Gray (#D8D8D8):** Supporting tables (budget categories, terms, reference data)
-- **Red (#D0021B):** Compliance issues or overdue items
-
-### Node Sizes
-- **Large:** High-connectivity nodes (Award with many transactions, Project with many personnel)
-- **Medium:** Standard entities (Organization, Personnel)
-- **Small:** Reference data (BudgetCategory, AllowedValues)
-- **Dynamic:** Size proportional to number of connections or dollar amounts
-
-### Edge Types
-- **Solid arrow (→):** Direct foreign key relationship
-- **Dashed line (⤏):** Optional/nullable relationship
-- **Bold line (═>):** Financial flow (money movement)
-- **Double line (⇒):** One-to-many relationship
-- **Color-coded:** Match the source node color
-
-### Node Badges & Indicators
-- **Status badges:** Active/Pending/Closed (color-coded)
-- **Count badges:** Number of connected records (e.g., "12 Awards")
-- **Alert icons:** Overdue deliverables, expiring compliance, low balance
-- **Currency:** Dollar amounts formatted (e.g., "$1.2M")
-
-### Interaction Behaviors
-
-#### Click Node
-- **Single click:** Expand to show directly connected tables
-- **Animation:** Smooth expansion with connected nodes sliding into view
-- **Highlight:** Dim non-related nodes to focus on connections
-
-#### Double Click
-- **Navigate:** Drill into detailed table view (full record list)
-- **Modal/Panel:** Show data grid with sorting, filtering
-
-#### Hover
-- **Tooltip:** Quick stats
-  - Organization: # of awards, total funding
-  - Award: Balance, end date, status
-  - Project: Team size, funding sources
-  - Personnel: Current roles, FTE total
-- **Highlight:** Light up all connected paths
-
-#### Right Click (Context Menu)
-- **View Details:** Open detailed record
-- **Export Data:** Download as CSV/JSON
-- **Create New:** Add related record (e.g., from Award → Create Invoice)
-- **Navigate To:** Jump to connected entity
-
-#### Drag & Drop
-- **Rearrange:** Manually position nodes for custom layouts
-- **Associate:** Drag to create relationships (if permitted by schema)
-
-### Layout Algorithms
-
-#### Initial View
-- **Center:** Organization node (selected or user's default)
-- **Radial layout:** Roles branch out radially
-- **Hierarchical:** Sub-nodes in layers by type
-
-#### Expanded View
-- **Force-directed graph:** Let physics simulation position nodes naturally
-- **Hierarchical:** Time-based layouts (proposals → awards → deliverables)
-- **Clustering:** Group by organization type, project status, etc.
-
-#### Filters & Views
-- **Time filter:** Show entities within date range
-- **Status filter:** Active only, closed only, all
-- **Role filter:** View as Sponsor, Recipient, Department, etc.
-- **Search:** Full-text search to highlight matching nodes
-
----
-
-## Implementation Plan
-
-### Architecture: Static GitHub Pages
-
-**Deployment:**
-- **Hosting:** GitHub Pages (static site)
-- **No backend required:** All data embedded in JSON files
-- **No persistence:** Interactive but read-only visualization
-- **Build process:** Python script parses SQL schema and generates JSON data files
-
-**How it works:**
-1. Run `scripts/parse_schema.py` to parse udm_schema.sql
-2. Generates static JSON files containing schema structure and relationships
-3. Client-side JavaScript in docs/index.html renders interactive visualization from JSON
-4. Deploy docs/ folder to GitHub Pages
+### Overview
+A previous implementation used Cytoscape.js to create an interactive network graph showing table relationships as nodes and edges. This view has been replaced with the data dictionary browser but is documented here for reference.
 
 ### Technology Stack
-
-**Current Implementation:**
-- **Hosting:** GitHub Pages (docs/ folder)
 - **Visualization:** Cytoscape.js v3.28.1 with Cola layout algorithm
-- **UI:** Vanilla JavaScript with embedded CSS
-- **Data:** Static JSON files (cytoscape-data.json)
 - **Layout Engine:** WebCola for force-directed graph layout
-
-**File Structure:**
-```
-docs/                           # GitHub Pages root
-├── index.html                  # Main dashboard (single-file app)
-└── data/
-    ├── schema.json            # Table and column definitions (29 tables)
-    ├── relationships.json     # Foreign key relationships (72 relationships)
-    └── cytoscape-data.json    # Combined graph data (nodes + edges)
-
-scripts/
-└── parse_schema.py            # SQL parser to generate JSON files
-```
+- **Data:** cytoscape-data.json (nodes + edges)
 
 ### Progressive Disclosure Pattern
-
-**Core Principle:** Start simple, reveal complexity through interaction
-
 **Initial State:**
 - Only 4 core tables visible: Organization, Award, Project, Personnel
 - Shows direct relationships between these core tables only
-- Clean, non-overwhelming starting view
 
-**Expansion Rules (tableHierarchy):**
-```javascript
-const tableHierarchy = {
-    'Organization': ['RFA', 'Proposal', 'Award', 'Project', 'Personnel',
-                     'IndirectRate', 'Fund', 'Subaward', 'ContactDetails'],
-    'Award': ['Proposal', 'Project', 'Terms', 'Modification', 'AwardBudgetPeriod',
-              'Invoice', 'AwardDeliverable', 'Subaward', 'CostShare', 'FinanceCode', 'Transaction'],
-    'Project': ['Award', 'Proposal', 'ProjectRole', 'ComplianceRequirement',
-                'ConflictOfInterest', 'Document'],
-    'Personnel': ['Organization', 'ProjectRole', 'Effort', 'ComplianceRequirement',
-                  'ConflictOfInterest', 'AwardDeliverable', 'Modification', 'ContactDetails'],
-    // ... more mappings for other tables
-};
-```
+**Expansion Rules:**
+Click tables to reveal related tables based on predefined hierarchy
 
-**Interaction Flow:**
-1. User clicks any table (node)
-2. `expandNode()` function looks up related tables in `tableHierarchy`
-3. Adds new nodes and edges to the graph
-4. Re-runs Cola layout to position new tables smoothly
-5. Highlights new tables with green border for 2 seconds
-6. Updates sidebar with clicked table's details and connections
-
-**Visual Feedback:**
-- New nodes get temporary `.new-node` class with green border
-- Selected node gets purple border (`border-color: #667eea`)
-- Connected edges highlighted when table is selected
-- Sidebar shows clickable connections list
-
-### Interactive Features
-
-**Control Buttons:**
+**Interactive Features:**
 - **Fit to Screen:** Zoom/pan to show all currently visible tables
-- **+ Expand One Level:** Expand all currently visible tables simultaneously
-- **⊖ Collapse All:** Reset view to 4 core tables
+- **Expand One Level:** Expand all currently visible tables simultaneously
+- **Collapse All:** Reset view to 4 core tables
 - **Show All Tables:** Reveal entire schema (all 29 tables, 72 relationships)
 
-**Sidebar Information:**
-1. **Getting Started Panel:**
-   - Explains the 4 core tables
-   - Provides usage tips
+### Visual Design
+**Node Colors:**
+- Organization: `#4A90E2` (Blue)
+- Award/Financial: `#7ED321` (Green)
+- Project/Proposal: `#BD10E0` (Purple)
+- Personnel: `#F5A623` (Orange)
+- Compliance: `#D0021B` (Red)
+- Supporting: `#D8D8D8` (Gray)
 
-2. **Table Details Panel** (appears when table clicked):
-   - Table name and category
-   - Clickable connections list (click to navigate to related table)
-   - Full column list with types and constraints (PK, Required badges)
-
-3. **Legend Panel:**
-   - Color-coded categories
-   - Always visible for reference
-
-**Node Interaction:**
-- **Click:** Expand table to show related tables + show details in sidebar
-- **Click connection in sidebar:** Navigate to and expand that related table
-- **Click background:** Clear selection and hide table details
-- **Mouse wheel:** Zoom in/out
-
-### Data Generation Script
-
-**Script: `scripts/parse_schema.py`**
-
-Parses `udm_schema.sql` and generates three JSON files:
-
-1. **schema.json:**
-   - Table definitions with column metadata
-   - Column types, constraints (PK, NOT NULL, UNIQUE, AUTO_INCREMENT)
-
-2. **relationships.json:**
-   - All foreign key relationships extracted via regex
-   - Format: `{from_table, from_column, to_table, to_column}`
-
-3. **cytoscape-data.json:**
-   - Nodes: Tables with category, color, columns
-   - Edges: Relationships with labels
-   - Categories: core, financial, proposal, compliance, supporting
-   - Color-coded by category for visual grouping
-
-**Key Implementation Detail:**
-The regex pattern handles multi-line CONSTRAINT...FOREIGN KEY statements:
-```python
-fk_pattern = r'CONSTRAINT\s+\w+\s+FOREIGN KEY\s*\((\w+)\)\s*REFERENCES\s*(\w+)\s*\((\w+)\)'
-for fk_match in re.finditer(fk_pattern, table_body, re.IGNORECASE | re.DOTALL):
-    relationships.append({
-        'from_table': table_name,
-        'from_column': fk_match.group(1),
-        'to_table': fk_match.group(2),
-        'to_column': fk_match.group(3)
-    })
-```
-
-### Visual Design Implementation
-
-**Color Scheme:**
-- Organization: `#4A90E2` (Blue) - The hub
-- Award/Financial: `#7ED321` (Green) - Money flow
-- Project/Proposal: `#BD10E0` (Purple) - Research work
-- Personnel: `#F5A623` (Orange) - People
-- Compliance: `#D0021B` (Red) - Risk/oversight
-- Supporting: `#D8D8D8` (Gray) - Reference data
-
-**Node Styling:**
+**Node Sizes:**
 - Core tables: 90px diameter, bold font
 - Regular tables: 70px diameter
-- 3px white border for contrast
-- Selected: 5px purple border
-- New: 5px green border (temporary)
 
 **Edge Styling:**
 - 2px gray lines with triangle arrows
 - Bezier curves for smooth connections
 - Highlighted: 3px purple when connected to selected node
-- 60% opacity by default, 100% when highlighted
 
-**Layout Algorithm:**
-- **Cola (Constraint-Based Layout):** Force-directed with constraints
-- Node spacing: 40-50px
-- Edge length: 120-150px
-- Animate: true (smooth transitions)
-- Max simulation time: 1.5-3 seconds depending on node count
-
-### Responsive Design
-- **Desktop:** Full interactive graph with sidebar
-- **Tablet/Mobile (< 768px):** Flexbox column layout
-  - Graph on top
-  - Sidebar below (max-height: 40vh, scrollable)
-
-### Running Locally
-
-To view the dashboard on your local machine:
-
-1. **Start a local web server** (required due to CORS restrictions):
-   ```bash
-   cd docs
-   python3 -m http.server 8000
-   ```
-
-2. **Open in browser:**
-   ```
-   http://localhost:8000
-   ```
-
-3. **Alternative (VS Code):**
-   - Install "Live Server" extension
-   - Right-click `docs/index.html` → "Open with Live Server"
-
-**Note:** Opening `index.html` directly with `file://` protocol will fail due to browser CORS security restrictions on fetch() requests. A web server is required to load the JSON data files.
-
----
-
-## Future Enhancements
-
-### Analytics Layer
-- **Financial dashboards:** Spending trends, burn rate
-- **Effort analytics:** Overcommitment detection
-- **Compliance monitoring:** Expiration tracking, overdue reports
-- **Portfolio view:** All awards/projects at a glance
-
-### AI/ML Features
-- **Predictive:** Forecast award closeout dates, spending patterns
-- **Anomaly detection:** Flag unusual transactions
-- **Recommendations:** Suggest optimal indirect rate usage
-
-### Collaboration
-- **Annotations:** Comments on nodes/edges
-- **Sharing:** Save and share custom views
-- **Permissions:** Role-based access control (PI sees their projects, OSP sees all)
-
-### Integration
-- **Export:** Generate reports, proposals, budgets from graph
-- **Import:** Bulk upload from Excel, other systems
-- **Sync:** Two-way sync with external systems (financial, HR)

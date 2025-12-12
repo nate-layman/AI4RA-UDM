@@ -1,0 +1,2044 @@
+{
+  "tables": {
+    "AllowedValues": {
+      "name": "AllowedValues",
+      "description": "Stores allowed values for controlled vocabularies used in other tables",
+      "synonyms": "ValueList, LookupTable",
+      "columns": [
+        {
+          "name": "Allowed_Value_ID",
+          "description": "Primary key for allowed values",
+          "synonyms": "Value ID",
+          "pii": false
+        },
+        {
+          "name": "Allowed_Value_Group",
+          "description": "Grouping category for related allowed values",
+          "synonyms": "Group, Category",
+          "pii": false
+        },
+        {
+          "name": "Allowed_Value_Code",
+          "description": "Short code identifier for the value",
+          "synonyms": "Code, Key",
+          "pii": false
+        },
+        {
+          "name": "Allowed_Value_Label",
+          "description": "Display label for the value in user interfaces",
+          "synonyms": "Label, Display Name",
+          "pii": false
+        },
+        {
+          "name": "Allowed_Value_Description",
+          "description": "Detailed description of the value and its usage",
+          "synonyms": "Description",
+          "pii": false
+        }
+      ]
+    },
+    "BudgetCategory": {
+      "name": "BudgetCategory",
+      "description": "Reference table for standardized budget categories used in proposals and awards",
+      "synonyms": "Budget Categories, Cost Categories",
+      "columns": [
+        {
+          "name": "BudgetCategory_ID",
+          "description": "Primary key for budget category",
+          "synonyms": "Category ID",
+          "pii": false
+        },
+        {
+          "name": "Category_Code",
+          "description": "Short code for budget category",
+          "synonyms": "Code",
+          "pii": false
+        },
+        {
+          "name": "Category_Name",
+          "description": "Name of budget category (e.g., Personnel, Equipment, Travel)",
+          "synonyms": "Name",
+          "pii": false
+        },
+        {
+          "name": "Category_Description",
+          "description": "Description of what expenses belong in this category",
+          "synonyms": "Description",
+          "pii": false
+        }
+      ]
+    },
+    "Account": {
+      "name": "Account",
+      "description": "Chart of accounts for financial transactions and general ledger coding",
+      "synonyms": "GL Accounts, Account Codes",
+      "columns": [
+        {
+          "name": "Account_Code",
+          "description": "Primary key account code from chart of accounts",
+          "synonyms": "Account",
+          "pii": false
+        },
+        {
+          "name": "Account_Name",
+          "description": "Descriptive name of account",
+          "synonyms": "Name",
+          "pii": false
+        },
+        {
+          "name": "Account_Category",
+          "description": "Category of account describing the nature of the expense (e.g., Salaries, Supplies, Equipment, Travel)",
+          "synonyms": "Natural Classification, Category",
+          "pii": false
+        },
+        {
+          "name": "Account_Type",
+          "description": "Type of account (Expense, Revenue, Asset, Liability, Equity)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Parent_Account_Code",
+          "description": "Parent account for hierarchical chart of accounts",
+          "synonyms": "Parent Account",
+          "pii": false
+        }
+      ]
+    },
+    "ActivityLog": {
+      "name": "ActivityLog",
+      "description": "Audit trail of all data changes and user actions in the system",
+      "synonyms": "Audit Log, Change Log, History",
+      "columns": [
+        {
+          "name": "Activity_ID",
+          "description": "Primary key for activity log entry",
+          "synonyms": "Log ID",
+          "pii": false
+        },
+        {
+          "name": "Table_Name",
+          "description": "Name of table that was modified",
+          "synonyms": "Table",
+          "pii": false
+        },
+        {
+          "name": "Record_ID",
+          "description": "ID of record that was modified",
+          "synonyms": "Record ID",
+          "pii": false
+        },
+        {
+          "name": "Action_Type",
+          "description": "Type of action (INSERT, UPDATE, DELETE, SELECT)",
+          "synonyms": "Action",
+          "pii": false
+        },
+        {
+          "name": "Action_Timestamp",
+          "description": "Date and time action occurred",
+          "synonyms": "Timestamp",
+          "pii": false
+        },
+        {
+          "name": "User_ID",
+          "description": "User who performed action",
+          "synonyms": "User",
+          "pii": false
+        },
+        {
+          "name": "Old_Values",
+          "description": "JSON of values before change",
+          "synonyms": "Before",
+          "pii": false
+        },
+        {
+          "name": "New_Values",
+          "description": "JSON of values after change",
+          "synonyms": "After",
+          "pii": false
+        },
+        {
+          "name": "IP_Address",
+          "description": "IP address of user",
+          "synonyms": "IP",
+          "pii": true
+        },
+        {
+          "name": "Session_ID",
+          "description": "Session identifier",
+          "synonyms": "Session",
+          "pii": false
+        }
+      ]
+    },
+    "AwardBudget": {
+      "name": "AwardBudget",
+      "description": "Detailed budget line items for awards by budget period and category",
+      "synonyms": "Award Budget Lines",
+      "columns": [
+        {
+          "name": "Award_Budget_ID",
+          "description": "Primary key for award budget line item",
+          "synonyms": "Budget Line ID",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award this budget line belongs to",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "AwardBudgetPeriod_ID",
+          "description": "Budget period this line belongs to",
+          "synonyms": "Period ID",
+          "pii": false
+        },
+        {
+          "name": "BudgetCategory_ID",
+          "description": "Budget category for this line",
+          "synonyms": "Category",
+          "pii": false
+        },
+        {
+          "name": "Line_Item_Description",
+          "description": "Description of budget line item",
+          "synonyms": "Description, Line Item",
+          "pii": false
+        },
+        {
+          "name": "Approved_Direct_Cost",
+          "description": "Originally approved direct cost amount",
+          "synonyms": "Approved Direct",
+          "pii": false
+        },
+        {
+          "name": "Approved_Indirect_Cost",
+          "description": "Originally approved indirect cost amount",
+          "synonyms": "Approved Indirect",
+          "pii": false
+        },
+        {
+          "name": "Approved_Total_Cost",
+          "description": "Originally approved total cost amount",
+          "synonyms": "Approved Total",
+          "pii": false
+        },
+        {
+          "name": "Current_Direct_Cost",
+          "description": "Current direct cost amount after modifications",
+          "synonyms": "Current Direct",
+          "pii": false
+        },
+        {
+          "name": "Current_Indirect_Cost",
+          "description": "Current indirect cost amount after modifications",
+          "synonyms": "Current Indirect",
+          "pii": false
+        },
+        {
+          "name": "Current_Total_Cost",
+          "description": "Current total cost amount after modifications",
+          "synonyms": "Current Total",
+          "pii": false
+        },
+        {
+          "name": "Rate_Base_Used",
+          "description": "Base type used for indirect rate calculation (MTDC, TDC, Salaries and Wages, Direct Salaries)",
+          "synonyms": "Base",
+          "pii": false
+        }
+      ]
+    },
+    "AwardBudgetPeriod": {
+      "name": "AwardBudgetPeriod",
+      "description": "Budget periods for awards with funding amounts and dates",
+      "synonyms": "Award Periods, Budget Years",
+      "columns": [
+        {
+          "name": "AwardBudgetPeriod_ID",
+          "description": "Primary key for award budget period",
+          "synonyms": "Period ID",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award this period belongs to",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Period_Number",
+          "description": "Sequential period number",
+          "synonyms": "Period, Year",
+          "pii": false
+        },
+        {
+          "name": "Start_Date",
+          "description": "Period start date",
+          "synonyms": "Begin Date",
+          "pii": false
+        },
+        {
+          "name": "End_Date",
+          "description": "Period end date",
+          "synonyms": "End Date",
+          "pii": false
+        },
+        {
+          "name": "Direct_Costs",
+          "description": "Total direct costs for period",
+          "synonyms": "Direct",
+          "pii": false
+        },
+        {
+          "name": "Indirect_Costs",
+          "description": "Total indirect costs for period",
+          "synonyms": "Indirect, F&A",
+          "pii": false
+        },
+        {
+          "name": "Total_Costs",
+          "description": "Total costs for period (direct + indirect)",
+          "synonyms": "Total",
+          "pii": false
+        },
+        {
+          "name": "Cost_Share_Amount",
+          "description": "Cost share required for period",
+          "synonyms": "Cost Share",
+          "pii": false
+        },
+        {
+          "name": "Period_Status",
+          "description": "Status of period (Pending, Released, Active, Closed)",
+          "synonyms": "Status",
+          "pii": false
+        }
+      ]
+    },
+    "AwardDeliverable": {
+      "name": "AwardDeliverable",
+      "description": "Required deliverables and reports for awards with due dates and status tracking",
+      "synonyms": "Reports, Deliverables, Milestones",
+      "columns": [
+        {
+          "name": "AwardDeliverable_ID",
+          "description": "Primary key for award deliverable",
+          "synonyms": "Deliverable ID",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award requiring deliverable",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Deliverable_Type_Value_ID",
+          "description": "Type of deliverable from AllowedValues (Technical Progress Report, Financial Report, Annual Report, Final Technical Report, Final Financial Report, Property Report, Invention Disclosure, Animal Welfare Report, Data Submission, Software Release, Clinical Trial Registration, Publication, Presentation, Material Transfer, Other)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "AwardBudgetPeriod_ID",
+          "description": "Budget period deliverable is due for",
+          "synonyms": "Period ID",
+          "pii": false
+        },
+        {
+          "name": "Deliverable_Number",
+          "description": "Sequential deliverable number",
+          "synonyms": "Number",
+          "pii": false
+        },
+        {
+          "name": "Due_Date",
+          "description": "Date deliverable is due",
+          "synonyms": "Due Date, Deadline",
+          "pii": false
+        },
+        {
+          "name": "Submission_Date",
+          "description": "Date deliverable was submitted",
+          "synonyms": "Submit Date",
+          "pii": false
+        },
+        {
+          "name": "Deliverable_Status",
+          "description": "Status (Pending, In Progress, Submitted, Accepted, Revision Required, Overdue)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "Responsible_Personnel_ID",
+          "description": "Personnel responsible for completing deliverable",
+          "synonyms": "Responsible Person",
+          "pii": false
+        },
+        {
+          "name": "Reviewed_By_Personnel_ID",
+          "description": "Personnel who reviewed deliverable",
+          "synonyms": "Reviewer",
+          "pii": false
+        },
+        {
+          "name": "Review_Date",
+          "description": "Date deliverable was reviewed",
+          "synonyms": "Review Date",
+          "pii": false
+        },
+        {
+          "name": "Comments",
+          "description": "Comments or notes about deliverable",
+          "synonyms": "Notes",
+          "pii": false
+        }
+      ]
+    },
+    "ComplianceRequirement": {
+      "name": "ComplianceRequirement",
+      "description": "Regulatory compliance requirements (IRB, IACUC, IBC, COI) for projects",
+      "synonyms": "IRB, IACUC, Compliance, Ethics Approvals",
+      "columns": [
+        {
+          "name": "ComplianceRequirement_ID",
+          "description": "Primary key for compliance requirement",
+          "synonyms": "Requirement ID, Protocol ID",
+          "pii": false
+        },
+        {
+          "name": "Requirement_Number",
+          "description": "Institution-assigned requirement number",
+          "synonyms": "Protocol Number, IRB Number",
+          "pii": false
+        },
+        {
+          "name": "Requirement_Title",
+          "description": "Title of compliance requirement or protocol",
+          "synonyms": "Title",
+          "pii": false
+        },
+        {
+          "name": "Requirement_Type",
+          "description": "Type of requirement (IRB, IACUC, IBC, COI, Radiation, Other)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Project_ID",
+          "description": "Project this requirement applies to",
+          "synonyms": "Project",
+          "pii": false
+        },
+        {
+          "name": "Review_Type",
+          "description": "Type of review (Exempt, Expedited, Full Board, Not Human Subjects, Administrative)",
+          "synonyms": "Review Level",
+          "pii": false
+        },
+        {
+          "name": "Initial_Approval_Date",
+          "description": "Date of initial approval",
+          "synonyms": "Approval Date",
+          "pii": false
+        },
+        {
+          "name": "Expiration_Date",
+          "description": "Date approval expires",
+          "synonyms": "Expiry Date",
+          "pii": false
+        },
+        {
+          "name": "Requirement_Status",
+          "description": "Current status (Draft, Submitted, In Review, Approved, Expired, Conditional Approval, Disapproved, Terminated, Suspended, Closed)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "Principal_Investigator_ID",
+          "description": "Principal investigator for requirement",
+          "synonyms": "PI",
+          "pii": false
+        },
+        {
+          "name": "Approval_Body",
+          "description": "Name of approving committee or body",
+          "synonyms": "Committee",
+          "pii": false
+        },
+        {
+          "name": "Risk_Level",
+          "description": "Risk level assessment (Minimal, More than Minimal, High)",
+          "synonyms": "Risk",
+          "pii": false
+        }
+      ]
+    },
+    "ConflictOfInterest": {
+      "name": "ConflictOfInterest",
+      "description": "Conflict of interest disclosures and management plans for personnel",
+      "synonyms": "COI, Disclosures",
+      "columns": [
+        {
+          "name": "ConflictOfInterest_ID",
+          "description": "Primary key for conflict of interest disclosure",
+          "synonyms": "COI ID",
+          "pii": false
+        },
+        {
+          "name": "Personnel_ID",
+          "description": "Person making disclosure",
+          "synonyms": "Person ID",
+          "pii": false
+        },
+        {
+          "name": "Project_ID",
+          "description": "Project disclosure relates to",
+          "synonyms": "Project",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award disclosure relates to",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Disclosure_Date",
+          "description": "Date disclosure was made",
+          "synonyms": "Date",
+          "pii": false
+        },
+        {
+          "name": "Relationship_Type_Value_ID",
+          "description": "Type of relationship from AllowedValues (Financial, Consulting, Employment, Equity, Intellectual Property, Board Membership, Family, Other)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Entity_Name",
+          "description": "Name of entity involved in potential conflict",
+          "synonyms": "Company, Organization",
+          "pii": false
+        },
+        {
+          "name": "Financial_Interest_Amount",
+          "description": "Dollar value of financial interest",
+          "synonyms": "Amount",
+          "pii": false
+        },
+        {
+          "name": "Relationship_Description",
+          "description": "Description of relationship and potential conflict",
+          "synonyms": "Description",
+          "pii": false
+        },
+        {
+          "name": "Management_Plan",
+          "description": "Plan for managing identified conflict",
+          "synonyms": "Plan",
+          "pii": false
+        },
+        {
+          "name": "ConflictOfInterest_Status",
+          "description": "Status (Under Review, No Conflict, Manageable Conflict, Unmanageable Conflict, Management Plan Required, Cleared)",
+          "synonyms": "COI Status, Status",
+          "pii": false
+        },
+        {
+          "name": "Review_Date",
+          "description": "Date disclosure was reviewed",
+          "synonyms": "Review Date",
+          "pii": false
+        },
+        {
+          "name": "Reviewed_By_Personnel_ID",
+          "description": "Person who reviewed disclosure",
+          "synonyms": "Reviewer",
+          "pii": false
+        }
+      ]
+    },
+    "CostShare": {
+      "name": "CostShare",
+      "description": "Cost sharing commitments and contributions for awards",
+      "synonyms": "Cost Sharing, Matching Funds",
+      "columns": [
+        {
+          "name": "CostShare_ID",
+          "description": "Primary key for cost share commitment",
+          "synonyms": "Cost Share ID",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award requiring cost share",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Committed_Amount",
+          "description": "Amount committed for cost sharing",
+          "synonyms": "Commitment, Amount",
+          "pii": false
+        },
+        {
+          "name": "Commitment_Type",
+          "description": "Type of cost share (Cash, In-Kind, Third-Party, Waived IDC)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Source_Organization_ID",
+          "description": "Organization providing cost share",
+          "synonyms": "Source Org",
+          "pii": false
+        },
+        {
+          "name": "Source_Fund_Code",
+          "description": "Fund code for cost share source",
+          "synonyms": "Fund",
+          "pii": false
+        },
+        {
+          "name": "Source_Description",
+          "description": "Description of cost share source",
+          "synonyms": "Description",
+          "pii": false
+        },
+        {
+          "name": "Is_Mandatory",
+          "description": "Flag indicating if cost share is mandatory or voluntary",
+          "synonyms": "Mandatory",
+          "pii": false
+        },
+        {
+          "name": "CostShare_Status",
+          "description": "Status (Committed, In Progress, Met, Waived)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "Met_Amount",
+          "description": "Amount of cost share commitment actually met",
+          "synonyms": "Met",
+          "pii": false
+        }
+      ]
+    },
+    "Document": {
+      "name": "Document",
+      "description": "Document management system for proposals, awards, reports, and other files",
+      "synonyms": "Files, Attachments, Documents",
+      "columns": [
+        {
+          "name": "Document_ID",
+          "description": "Primary key for document",
+          "synonyms": "Doc ID",
+          "pii": false
+        },
+        {
+          "name": "Document_Type_Value_ID",
+          "description": "Type of document from AllowedValues (Proposal, Progress Report, Financial Report, Final Report, Closeout Document, Award Notice, Modification, Correspondence, Compliance Approval, Budget, SOW, Contract, Subaward, Invoice, Receipt, Data Submission, Software Release, Publication, Presentation, Other)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Related_Entity_Type",
+          "description": "Type of entity document is related to (Award, Proposal, Project, ComplianceRequirement, Subaward, Organization, Personnel, Invoice, AwardDeliverable, ConflictOfInterest)",
+          "synonyms": "Entity Type",
+          "pii": false
+        },
+        {
+          "name": "Related_Entity_ID",
+          "description": "ID of related entity",
+          "synonyms": "Entity ID",
+          "pii": false
+        },
+        {
+          "name": "File_Name",
+          "description": "Original filename",
+          "synonyms": "Filename",
+          "pii": false
+        },
+        {
+          "name": "Storage_Location",
+          "description": "Storage location or path",
+          "synonyms": "Location, Path",
+          "pii": false
+        },
+        {
+          "name": "File_Size_Bytes",
+          "description": "File size in bytes",
+          "synonyms": "Size, File Size",
+          "pii": false
+        },
+        {
+          "name": "MIME_Type",
+          "description": "MIME type of document (e.g., application/pdf, image/jpeg)",
+          "synonyms": "Content Type, File Type",
+          "pii": false
+        },
+        {
+          "name": "File_Hash",
+          "description": "Cryptographic hash for file integrity verification (SHA-256, SHA-512, etc.)",
+          "synonyms": "Hash, Checksum",
+          "pii": false
+        },
+        {
+          "name": "Version_Number",
+          "description": "Version number for document versioning",
+          "synonyms": "Version",
+          "pii": false
+        },
+        {
+          "name": "Description",
+          "description": "Description of document contents",
+          "synonyms": "Details",
+          "pii": false
+        }
+      ]
+    },
+    "Effort": {
+      "name": "Effort",
+      "description": "Effort certification and tracking for personnel time charged to projects",
+      "synonyms": "Effort Reporting, Time Allocation, PAR",
+      "columns": [
+        {
+          "name": "Effort_ID",
+          "description": "Primary key for effort record",
+          "synonyms": "Effort ID",
+          "pii": false
+        },
+        {
+          "name": "ProjectRole_ID",
+          "description": "Project role this effort record belongs to",
+          "synonyms": "Role ID",
+          "pii": false
+        },
+        {
+          "name": "Period_Start_Date",
+          "description": "Start date of effort reporting period",
+          "synonyms": "Period Start",
+          "pii": false
+        },
+        {
+          "name": "Period_End_Date",
+          "description": "End date of effort reporting period",
+          "synonyms": "Period End",
+          "pii": false
+        },
+        {
+          "name": "Committed_Percent",
+          "description": "Committed effort percentage",
+          "synonyms": "Committed Effort",
+          "pii": false
+        },
+        {
+          "name": "Committed_Person_Months",
+          "description": "Committed effort in person months",
+          "synonyms": "Person Months",
+          "pii": false
+        },
+        {
+          "name": "Actual_Percent",
+          "description": "Actual effort percentage expended",
+          "synonyms": "Actual Effort",
+          "pii": false
+        },
+        {
+          "name": "Variance_Percent",
+          "description": "Variance between committed and actual effort",
+          "synonyms": "Variance",
+          "pii": false
+        },
+        {
+          "name": "Is_Certified",
+          "description": "Flag indicating if effort has been certified",
+          "synonyms": "Certified",
+          "pii": false
+        },
+        {
+          "name": "Certification_Date",
+          "description": "Date effort was certified",
+          "synonyms": "Cert Date",
+          "pii": false
+        },
+        {
+          "name": "Certified_By_Personnel_ID",
+          "description": "Person who certified the effort",
+          "synonyms": "Certifier",
+          "pii": false
+        },
+        {
+          "name": "Certification_Method",
+          "description": "Method used for certification (PAR, Activity Report, Timesheet, Other)",
+          "synonyms": "Method",
+          "pii": false
+        },
+        {
+          "name": "Requires_Prior_Approval",
+          "description": "Flag indicating if variance requires sponsor prior approval",
+          "synonyms": "Prior Approval Required",
+          "pii": false
+        },
+        {
+          "name": "Prior_Approval_Status",
+          "description": "Status of prior approval (Not Required, Pending, Approved, Denied)",
+          "synonyms": "Approval Status",
+          "pii": false
+        }
+      ]
+    },
+    "FinanceCode": {
+      "name": "FinanceCode",
+      "description": "Finance system codes linking awards to institutional accounting strings",
+      "synonyms": "Financial Codes, Account Strings, FOAP",
+      "columns": [
+        {
+          "name": "Finance_Code",
+          "description": "Primary key finance code",
+          "synonyms": "Finance String, FOAP",
+          "pii": false
+        },
+        {
+          "name": "Finance_Name",
+          "description": "Descriptive name of finance code",
+          "synonyms": "Name",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award associated with finance code",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Purpose_Value_ID",
+          "description": "Purpose of finance code from AllowedValues (Direct Costs, Cost Share, Indirect Costs, Subcontract, Department Share, Program Income, Other)",
+          "synonyms": "Use",
+          "pii": false
+        },
+        {
+          "name": "Organization_ID",
+          "description": "Organization responsible for finance code",
+          "synonyms": "Org ID",
+          "pii": false
+        }
+      ]
+    },
+    "Fund": {
+      "name": "Fund",
+      "description": "Fund codes from institutional accounting system",
+      "synonyms": "Funds, Fund Codes",
+      "columns": [
+        {
+          "name": "Fund_Code",
+          "description": "Primary key fund code from institutional accounting system",
+          "synonyms": "Fund",
+          "pii": false
+        },
+        {
+          "name": "Fund_Name",
+          "description": "Descriptive name of fund",
+          "synonyms": "Name",
+          "pii": false
+        },
+        {
+          "name": "Fund_Type_Value_ID",
+          "description": "Fund type from AllowedValues",
+          "synonyms": "Fund Type",
+          "pii": false
+        },
+        {
+          "name": "Organization_ID",
+          "description": "Organization responsible for fund",
+          "synonyms": "Org ID",
+          "pii": false
+        }
+      ]
+    },
+    "IndirectRate": {
+      "name": "IndirectRate",
+      "description": "Negotiated indirect cost rates (F&A rates) for organizations",
+      "synonyms": "F&A Rates, Overhead Rates, IDC Rates, NICRA",
+      "columns": [
+        {
+          "name": "IndirectRate_ID",
+          "description": "Primary key for indirect rate record",
+          "synonyms": "Rate ID",
+          "pii": false
+        },
+        {
+          "name": "Organization_ID",
+          "description": "Organization to which this indirect cost rate applies",
+          "synonyms": "Applicable Organization, Org ID",
+          "pii": false
+        },
+        {
+          "name": "Rate_Type",
+          "description": "Type of indirect rate (On-Campus, Off-Campus, MTDC, TDC, Clinical Trial, Fringe Benefits, Facilities, Administrative)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Rate_Percentage",
+          "description": "Percentage rate as decimal (e.g., 55.50 for 55.5%)",
+          "synonyms": "Rate, Percentage",
+          "pii": false
+        },
+        {
+          "name": "Effective_Start_Date",
+          "description": "Date when rate becomes effective",
+          "synonyms": "Start Date, Effective Date",
+          "pii": false
+        },
+        {
+          "name": "Effective_End_Date",
+          "description": "Date when rate expires (NULL if still active)",
+          "synonyms": "End Date, Expiration Date",
+          "pii": false
+        },
+        {
+          "name": "Base_Type",
+          "description": "Base type for rate calculation (MTDC, TDC, Salaries and Wages, Direct Salaries)",
+          "synonyms": "Base",
+          "pii": false
+        },
+        {
+          "name": "Negotiated_Agreement_ID",
+          "description": "Reference to negotiated rate agreement document",
+          "synonyms": "NICRA ID, Agreement ID",
+          "pii": false
+        }
+      ]
+    },
+    "Invoice": {
+      "name": "Invoice",
+      "description": "Invoices submitted to sponsors for reimbursement or payment",
+      "synonyms": "Billing, Invoices, Payment Requests",
+      "columns": [
+        {
+          "name": "Invoice_ID",
+          "description": "Primary key for invoice",
+          "synonyms": "Invoice Number",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award being invoiced",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Invoice_Number",
+          "description": "Institution-assigned invoice number",
+          "synonyms": "Number",
+          "pii": false
+        },
+        {
+          "name": "AwardBudgetPeriod_ID",
+          "description": "Budget period being invoiced",
+          "synonyms": "Period ID",
+          "pii": false
+        },
+        {
+          "name": "Invoice_Date",
+          "description": "Date invoice was created",
+          "synonyms": "Date",
+          "pii": false
+        },
+        {
+          "name": "Period_Start_Date",
+          "description": "Start date of period covered by invoice",
+          "synonyms": "Period Start",
+          "pii": false
+        },
+        {
+          "name": "Period_End_Date",
+          "description": "End date of period covered by invoice",
+          "synonyms": "Period End",
+          "pii": false
+        },
+        {
+          "name": "Direct_Costs",
+          "description": "Direct costs invoiced",
+          "synonyms": "Direct",
+          "pii": false
+        },
+        {
+          "name": "Indirect_Costs",
+          "description": "Indirect costs invoiced",
+          "synonyms": "Indirect, F&A",
+          "pii": false
+        },
+        {
+          "name": "Cost_Share",
+          "description": "Cost share amount reported on invoice",
+          "synonyms": "Cost Share",
+          "pii": false
+        },
+        {
+          "name": "Total_Amount",
+          "description": "Total amount invoiced",
+          "synonyms": "Total",
+          "pii": false
+        },
+        {
+          "name": "Invoice_Status",
+          "description": "Status (Draft, Submitted, Under Review, Approved, Paid, Rejected)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "Submission_Date",
+          "description": "Date invoice was submitted to sponsor",
+          "synonyms": "Submit Date",
+          "pii": false
+        },
+        {
+          "name": "Payment_Date",
+          "description": "Date payment was received",
+          "synonyms": "Paid Date",
+          "pii": false
+        },
+        {
+          "name": "Payment_Amount",
+          "description": "Amount of payment received",
+          "synonyms": "Payment",
+          "pii": false
+        }
+      ]
+    },
+    "Modification": {
+      "name": "Modification",
+      "description": "Award modifications tracking funding changes, extensions, and amendments",
+      "synonyms": "Award Amendments, Changes, Revisions",
+      "columns": [
+        {
+          "name": "Modification_ID",
+          "description": "Primary key for modification",
+          "synonyms": "Mod ID, Amendment ID",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award being modified",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Modification_Number",
+          "description": "Sequential modification number",
+          "synonyms": "Mod Number, Amendment Number",
+          "pii": false
+        },
+        {
+          "name": "Event_Type_Value_ID",
+          "description": "Type of modification event from AllowedValues (Initial Award, Incremental Funding, No Cost Extension, Budget Revision, Scope Change, Personnel Change, Termination, Supplement, Carryforward, Administrative Change)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Event_Timestamp",
+          "description": "Date and time modification was recorded in system",
+          "synonyms": "Timestamp",
+          "pii": false
+        },
+        {
+          "name": "Effective_Date",
+          "description": "Date modification becomes effective",
+          "synonyms": "Effective Date",
+          "pii": false
+        },
+        {
+          "name": "Funding_Amount_Change",
+          "description": "Change in funding amount (positive or negative)",
+          "synonyms": "Funding Change, Amount Change",
+          "pii": false
+        },
+        {
+          "name": "New_End_Date",
+          "description": "New end date if modification includes date extension",
+          "synonyms": "End Date",
+          "pii": false
+        },
+        {
+          "name": "Affected_Personnel_ID",
+          "description": "Personnel affected by modification (for personnel changes)",
+          "synonyms": "Person ID",
+          "pii": false
+        },
+        {
+          "name": "Change_Description",
+          "description": "Description of what changed",
+          "synonyms": "Description, Details",
+          "pii": false
+        },
+        {
+          "name": "Justification",
+          "description": "Justification for the modification",
+          "synonyms": "Reason",
+          "pii": false
+        },
+        {
+          "name": "Impact_on_Budget",
+          "description": "Flag indicating if modification impacts budget",
+          "synonyms": "Budget Impact",
+          "pii": false
+        },
+        {
+          "name": "Requires_Prior_Approval",
+          "description": "Flag indicating if sponsor prior approval was required",
+          "synonyms": "Prior Approval Required",
+          "pii": false
+        },
+        {
+          "name": "Approval_Status",
+          "description": "Status of approval (Pending, Approved, Rejected, Not Required)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "Approved_By_Personnel_ID",
+          "description": "Personnel who approved the modification",
+          "synonyms": "Approver ID",
+          "pii": false
+        },
+        {
+          "name": "Approval_Date",
+          "description": "Date modification was approved",
+          "synonyms": "Approval Date",
+          "pii": false
+        }
+      ]
+    },
+    "Organization": {
+      "name": "Organization",
+      "description": "Institutional entities (not individuals) that participate in research funding flows - includes sponsors that award funding, academic units that receive and administer funding, subrecipients that receive subawards, and vendors that provide goods/services",
+      "synonyms": "Org, Institution, Entity",
+      "columns": [
+        {
+          "name": "Organization_ID",
+          "description": "Primary key for organization",
+          "synonyms": "Org ID",
+          "pii": false
+        },
+        {
+          "name": "Organization_Name",
+          "description": "Full name of the organization",
+          "synonyms": "Name, Org Name",
+          "pii": false
+        },
+        {
+          "name": "Organization_Type",
+          "description": "Type of organization (Department, College, School, Sponsor, Subrecipient, Vendor, Institute, Center)",
+          "synonyms": "Type, Org Type",
+          "pii": false
+        },
+        {
+          "name": "Parent_Organization_ID",
+          "description": "Reference to parent organization in hierarchy",
+          "synonyms": "Parent Org ID",
+          "pii": false
+        },
+        {
+          "name": "UEI",
+          "description": "Unique Entity Identifier (12-character SAM registration number)",
+          "synonyms": "UEI, SAM Number",
+          "pii": false
+        }
+      ]
+    },
+    "Personnel": {
+      "name": "Personnel",
+      "description": "Stores information about individuals involved in projects and awards",
+      "synonyms": "Person, Employee",
+      "columns": [
+        {
+          "name": "Personnel_ID",
+          "description": "Primary key for personnel record",
+          "synonyms": "Person ID, Employee ID",
+          "pii": false
+        },
+        {
+          "name": "ORCID",
+          "description": "Open Researcher and Contributor ID in format XXXX-XXXX-XXXX-XXXX",
+          "synonyms": "ORCID iD",
+          "pii": true
+        },
+        {
+          "name": "First_Name",
+          "description": "First name of individual",
+          "synonyms": "Given Name, Forename",
+          "pii": true
+        },
+        {
+          "name": "Last_Name",
+          "description": "Last name of individual",
+          "synonyms": "Surname, Family Name",
+          "pii": true
+        },
+        {
+          "name": "Middle_Name",
+          "description": "Middle name or initial of individual",
+          "synonyms": "Middle Initial",
+          "pii": true
+        },
+        {
+          "name": "Institutional_ID",
+          "description": "Institution-specific identifier for personnel",
+          "synonyms": "Employee ID, Net ID",
+          "pii": false
+        },
+        {
+          "name": "Primary_Email",
+          "description": "Primary email address for communication",
+          "synonyms": "Email, Work Email",
+          "pii": true
+        },
+        {
+          "name": "Person_Type",
+          "description": "Type of personnel (Faculty, Staff, Student, External, Postdoc, Resident, Fellow)",
+          "synonyms": "Type, Role",
+          "pii": false
+        },
+        {
+          "name": "Department_Organization_ID",
+          "description": "Reference to primary department organization",
+          "synonyms": "Department ID, Org ID",
+          "pii": false
+        }
+      ]
+    },
+    "ContactDetails": {
+      "name": "ContactDetails",
+      "description": "Stores contact information for personnel and organizations",
+      "synonyms": "Contact, ContactInfo",
+      "columns": [
+        {
+          "name": "ContactDetails_ID",
+          "description": "Primary key for contact detail record",
+          "synonyms": "Contact ID",
+          "pii": false
+        },
+        {
+          "name": "Personnel_ID",
+          "description": "Reference to personnel (mutually exclusive with Organization_ID)",
+          "synonyms": "Person ID",
+          "pii": false
+        },
+        {
+          "name": "Organization_ID",
+          "description": "Reference to organization (mutually exclusive with Personnel_ID)",
+          "synonyms": "Org ID",
+          "pii": false
+        },
+        {
+          "name": "AllowedValue_ID",
+          "description": "Type of contact (Email, Phone, Fax) from AllowedValues",
+          "synonyms": "Contact Type ID",
+          "pii": false
+        },
+        {
+          "name": "ContactDetails_Value",
+          "description": "The actual contact value (email address, phone number, etc.)",
+          "synonyms": "Value, Contact Info",
+          "pii": true
+        }
+      ]
+    },
+    "Project": {
+      "name": "Project",
+      "description": "Represents research or training projects",
+      "synonyms": null,
+      "columns": [
+        {
+          "name": "Project_ID",
+          "description": "Primary key for project",
+          "synonyms": "Project Number",
+          "pii": false
+        },
+        {
+          "name": "Project_Title",
+          "description": "Full title of the project",
+          "synonyms": "Title",
+          "pii": false
+        },
+        {
+          "name": "Acronym",
+          "description": "Short acronym or abbreviation for project",
+          "synonyms": "Short Name, Abbreviation",
+          "pii": false
+        },
+        {
+          "name": "Parent_Project_ID",
+          "description": "Reference to parent project for sub-projects",
+          "synonyms": "Parent Project",
+          "pii": false
+        },
+        {
+          "name": "Project_Type_Value_ID",
+          "description": "Type of project from AllowedValues (Research, Training, Service, Clinical Trial, Fellowship, Infrastructure, Other)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Abstract",
+          "description": "Abstract or summary description of project",
+          "synonyms": "Summary, Description",
+          "pii": false
+        },
+        {
+          "name": "Start_Date",
+          "description": "Project start date",
+          "synonyms": "Begin Date",
+          "pii": false
+        },
+        {
+          "name": "End_Date",
+          "description": "Project end date",
+          "synonyms": "Completion Date",
+          "pii": false
+        },
+        {
+          "name": "Lead_Organization_ID",
+          "description": "Primary organization leading the project",
+          "synonyms": "Lead Org, Primary Org",
+          "pii": false
+        },
+        {
+          "name": "Project_Status",
+          "description": "Current status (Planning, Active, Completed, Suspended, Cancelled)",
+          "synonyms": "Status",
+          "pii": false
+        }
+      ]
+    },
+    "ProjectRole": {
+      "name": "ProjectRole",
+      "description": "Personnel roles and assignments on projects with effort allocation",
+      "synonyms": "Project Team, Personnel Assignments, Roles",
+      "columns": [
+        {
+          "name": "ProjectRole_ID",
+          "description": "Primary key for project role",
+          "synonyms": "Role ID",
+          "pii": false
+        },
+        {
+          "name": "Project_ID",
+          "description": "Project this role belongs to",
+          "synonyms": "Project",
+          "pii": false
+        },
+        {
+          "name": "Personnel_ID",
+          "description": "Person assigned to role",
+          "synonyms": "Person ID",
+          "pii": false
+        },
+        {
+          "name": "Role_Value_ID",
+          "description": "Role type from AllowedValues (PI, Co-PI, Co-I, Key Personnel, etc.)",
+          "synonyms": "Role",
+          "pii": false
+        },
+        {
+          "name": "Is_Key_Personnel",
+          "description": "Flag indicating if this is key personnel",
+          "synonyms": "Key Personnel",
+          "pii": false
+        },
+        {
+          "name": "Funding_Award_ID",
+          "description": "Award funding this role",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Start_Date",
+          "description": "Date person started in role",
+          "synonyms": "Begin Date",
+          "pii": false
+        },
+        {
+          "name": "End_Date",
+          "description": "Date person ended in role",
+          "synonyms": "End Date",
+          "pii": false
+        },
+        {
+          "name": "FTE_Percent",
+          "description": "Full-time equivalent percentage allocated to role",
+          "synonyms": "FTE, Effort",
+          "pii": false
+        },
+        {
+          "name": "Salary_Charged",
+          "description": "Salary amount charged to project",
+          "synonyms": "Salary",
+          "pii": false
+        }
+      ]
+    },
+    "RFA": {
+      "name": "RFA",
+      "description": "Represents Request for Applications or funding announcements",
+      "synonyms": "Funding Opportunity",
+      "columns": [
+        {
+          "name": "RFA_ID",
+          "description": "Primary key for request for application",
+          "synonyms": "RFA Number, Opportunity ID",
+          "pii": false
+        },
+        {
+          "name": "Sponsor_Organization_ID",
+          "description": "Sponsoring organization issuing the RFA",
+          "synonyms": "Sponsor ID, Agency ID",
+          "pii": false
+        },
+        {
+          "name": "RFA_Number",
+          "description": "Official RFA or funding opportunity number",
+          "synonyms": "FOA Number, Number",
+          "pii": false
+        },
+        {
+          "name": "RFA_Title",
+          "description": "Title of the funding opportunity",
+          "synonyms": "Opportunity Title, Title",
+          "pii": false
+        },
+        {
+          "name": "Program_Code",
+          "description": "Program code or activity code for the opportunity",
+          "synonyms": "Activity Code",
+          "pii": false
+        },
+        {
+          "name": "Announcement_URL",
+          "description": "URL to the full announcement",
+          "synonyms": "URL, Link",
+          "pii": false
+        },
+        {
+          "name": "Opportunity_Number",
+          "description": "Grants.gov or other system opportunity number",
+          "synonyms": "Opp Number",
+          "pii": false
+        },
+        {
+          "name": "CFDA_Number",
+          "description": "Catalog of Federal Domestic Assistance number",
+          "synonyms": "CFDA, Assistance Listing Number",
+          "pii": false
+        }
+      ]
+    },
+    "Proposal": {
+      "name": "Proposal",
+      "description": "Represents submitted proposals for projects",
+      "synonyms": null,
+      "columns": [
+        {
+          "name": "Proposal_ID",
+          "description": "Primary key for proposal",
+          "synonyms": "Proposal Number",
+          "pii": false
+        },
+        {
+          "name": "Proposal_Number",
+          "description": "Institution-assigned proposal number",
+          "synonyms": "Number, Ref Number",
+          "pii": false
+        },
+        {
+          "name": "Proposal_Title",
+          "description": "Title of the proposal",
+          "synonyms": "Title",
+          "pii": false
+        },
+        {
+          "name": "Project_ID",
+          "description": "Associated project (may be NULL for new projects)",
+          "synonyms": "Project",
+          "pii": false
+        },
+        {
+          "name": "Sponsor_Organization_ID",
+          "description": "Organization to which proposal is submitted",
+          "synonyms": "Sponsor ID, Agency ID",
+          "pii": false
+        },
+        {
+          "name": "Submitting_Organization_ID",
+          "description": "Organization submitting the proposal",
+          "synonyms": "Submitter Org ID",
+          "pii": false
+        },
+        {
+          "name": "Administering_Organization_ID",
+          "description": "Organization that will administer the award if funded",
+          "synonyms": "Admin Org ID",
+          "pii": false
+        },
+        {
+          "name": "RFA_ID",
+          "description": "Associated request for application",
+          "synonyms": "RFA, Opportunity",
+          "pii": false
+        },
+        {
+          "name": "Previous_Proposal_ID",
+          "description": "Reference to previous related proposal (renewals, resubmissions)",
+          "synonyms": "Parent Proposal, Prior Proposal",
+          "pii": false
+        },
+        {
+          "name": "Submission_Version",
+          "description": "Version number for resubmissions",
+          "synonyms": "Version",
+          "pii": false
+        },
+        {
+          "name": "Proposed_Start_Date",
+          "description": "Proposed project start date",
+          "synonyms": "Start Date",
+          "pii": false
+        },
+        {
+          "name": "Proposed_End_Date",
+          "description": "Proposed project end date",
+          "synonyms": "End Date",
+          "pii": false
+        },
+        {
+          "name": "Total_Proposed_Direct",
+          "description": "Total direct costs proposed",
+          "synonyms": "Direct Costs",
+          "pii": false
+        },
+        {
+          "name": "Total_Proposed_Indirect",
+          "description": "Total indirect costs proposed",
+          "synonyms": "Indirect Costs, F&A Costs",
+          "pii": false
+        },
+        {
+          "name": "Total_Proposed_Budget",
+          "description": "Total budget proposed (direct + indirect)",
+          "synonyms": "Total Budget",
+          "pii": false
+        },
+        {
+          "name": "Submission_Deadline",
+          "description": "Sponsor deadline for submission",
+          "synonyms": "Deadline, Due Date",
+          "pii": false
+        },
+        {
+          "name": "Submission_Date",
+          "description": "Actual date submitted to sponsor",
+          "synonyms": "Submit Date",
+          "pii": false
+        },
+        {
+          "name": "Internal_Approval_Status",
+          "description": "Internal approval status (Draft, In Review, Approved, Rejected, Withdrawn)",
+          "synonyms": "Approval Status",
+          "pii": false
+        },
+        {
+          "name": "Decision_Status",
+          "description": "Sponsor decision status (Pending, Submitted, Under Review, Awarded, Declined, Withdrawn)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "Decision_Date",
+          "description": "Date sponsor made funding decision",
+          "synonyms": "Award Date, Decline Date",
+          "pii": false
+        },
+        {
+          "name": "PAF_Routing_Status",
+          "description": "Proposal approval form routing status",
+          "synonyms": "Routing Status, Workflow Status",
+          "pii": false
+        }
+      ]
+    },
+    "ProposalBudget": {
+      "name": "ProposalBudget",
+      "description": "Detailed budget line items for proposals by period and category",
+      "synonyms": "Proposal Budget Lines",
+      "columns": [
+        {
+          "name": "ProposalBudget_ID",
+          "description": "Primary key for proposal budget line item",
+          "synonyms": "Budget Line ID",
+          "pii": false
+        },
+        {
+          "name": "Proposal_ID",
+          "description": "Reference to parent proposal",
+          "synonyms": "Proposal",
+          "pii": false
+        },
+        {
+          "name": "Period_Number",
+          "description": "Budget period number (typically 1-5 for multi-year budgets)",
+          "synonyms": "Period, Year",
+          "pii": false
+        },
+        {
+          "name": "BudgetCategory_ID",
+          "description": "Budget category for this line item",
+          "synonyms": "Category",
+          "pii": false
+        },
+        {
+          "name": "Line_Item_Description",
+          "description": "Description of specific budget line item",
+          "synonyms": "Description, Line Item",
+          "pii": false
+        },
+        {
+          "name": "Direct_Cost",
+          "description": "Direct cost amount for this line item",
+          "synonyms": "Direct",
+          "pii": false
+        },
+        {
+          "name": "Indirect_Cost",
+          "description": "Indirect cost amount for this line item",
+          "synonyms": "Indirect, F&A",
+          "pii": false
+        },
+        {
+          "name": "Total_Cost",
+          "description": "Total cost (direct + indirect) for this line item",
+          "synonyms": "Total",
+          "pii": false
+        },
+        {
+          "name": "Quantity",
+          "description": "Quantity of units for calculation",
+          "synonyms": "Qty, Units",
+          "pii": false
+        },
+        {
+          "name": "Unit_Cost",
+          "description": "Cost per unit",
+          "synonyms": "Rate, Price",
+          "pii": false
+        },
+        {
+          "name": "Applied_Indirect_Rate_ID",
+          "description": "Indirect rate applied to this line item",
+          "synonyms": "IDC Rate ID",
+          "pii": false
+        },
+        {
+          "name": "Rate_Base_Used",
+          "description": "Base type used for indirect rate calculation (MTDC, TDC, Salaries and Wages, Direct Salaries)",
+          "synonyms": "Base",
+          "pii": false
+        },
+        {
+          "name": "Version_No",
+          "description": "Budget version number for tracking revisions",
+          "synonyms": "Version",
+          "pii": false
+        }
+      ]
+    },
+    "Award": {
+      "name": "Award",
+      "description": "Represents awarded funding for projects",
+      "synonyms": null,
+      "columns": [
+        {
+          "name": "Award_ID",
+          "description": "Primary key for award",
+          "synonyms": "Award Number",
+          "pii": false
+        },
+        {
+          "name": "Award_Number",
+          "description": "Official sponsor-assigned award number",
+          "synonyms": "Number",
+          "pii": false
+        },
+        {
+          "name": "Award_Title",
+          "description": "Title of the award",
+          "synonyms": "Title",
+          "pii": false
+        },
+        {
+          "name": "Project_ID",
+          "description": "Associated project",
+          "synonyms": "Project",
+          "pii": false
+        },
+        {
+          "name": "Sponsor_Organization_ID",
+          "description": "Direct sponsor providing funding",
+          "synonyms": "Sponsor ID, Agency ID",
+          "pii": false
+        },
+        {
+          "name": "RFA_ID",
+          "description": "Original request for application",
+          "synonyms": "RFA, Opportunity",
+          "pii": false
+        },
+        {
+          "name": "Proposal_ID",
+          "description": "Proposal that resulted in this award",
+          "synonyms": "Proposal",
+          "pii": false
+        },
+        {
+          "name": "Original_Start_Date",
+          "description": "Original project period start date",
+          "synonyms": "Start Date, Begin Date",
+          "pii": false
+        },
+        {
+          "name": "Original_End_Date",
+          "description": "Original project period end date",
+          "synonyms": "End Date",
+          "pii": false
+        },
+        {
+          "name": "Current_Total_Funded",
+          "description": "Current total funded amount including modifications",
+          "synonyms": "Total Funding, Funded Amount",
+          "pii": false
+        },
+        {
+          "name": "Current_End_Date",
+          "description": "Current project period end date (may differ from original due to extensions)",
+          "synonyms": "End Date",
+          "pii": false
+        },
+        {
+          "name": "Total_Anticipated_Funding",
+          "description": "Total anticipated funding over full award life",
+          "synonyms": "Total Award",
+          "pii": false
+        },
+        {
+          "name": "Award_Status",
+          "description": "Current status (Pending, Active, Closed, Suspended, Terminated)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "CFDA_Number",
+          "description": "Catalog of Federal Domestic Assistance number",
+          "synonyms": "CFDA, Assistance Listing Number",
+          "pii": false
+        },
+        {
+          "name": "Federal_Award_ID",
+          "description": "Federal award identification number for federal awards",
+          "synonyms": "FAIN",
+          "pii": false
+        },
+        {
+          "name": "Prime_Sponsor_Organization_ID",
+          "description": "Ultimate funding source for flow-through awards",
+          "synonyms": "Prime Sponsor, Prime Agency",
+          "pii": false
+        },
+        {
+          "name": "Flow_Through_Indicator",
+          "description": "Flag indicating if this is a flow-through award",
+          "synonyms": "Flow Through, Pass Through",
+          "pii": false
+        }
+      ]
+    },
+    "Subaward": {
+      "name": "Subaward",
+      "description": "Represents subawards issued under prime awards",
+      "synonyms": null,
+      "columns": [
+        {
+          "name": "Subaward_ID",
+          "description": "Primary key for subaward",
+          "synonyms": "Subaward Number",
+          "pii": false
+        },
+        {
+          "name": "Prime_Award_ID",
+          "description": "Prime award funding this subaward",
+          "synonyms": "Prime Award",
+          "pii": false
+        },
+        {
+          "name": "Subrecipient_Organization_ID",
+          "description": "Organization receiving subaward",
+          "synonyms": "Subrecipient ID, Sub Org ID",
+          "pii": false
+        },
+        {
+          "name": "Subaward_Number",
+          "description": "Institution-assigned subaward number",
+          "synonyms": "Number",
+          "pii": false
+        },
+        {
+          "name": "Subaward_Amount",
+          "description": "Total subaward amount",
+          "synonyms": "Amount",
+          "pii": false
+        },
+        {
+          "name": "Start_Date",
+          "description": "Subaward start date",
+          "synonyms": "Begin Date",
+          "pii": false
+        },
+        {
+          "name": "End_Date",
+          "description": "Subaward end date",
+          "synonyms": "End Date",
+          "pii": false
+        },
+        {
+          "name": "Subaward_Status",
+          "description": "Current status (Pending, Active, Closed, Terminated, Suspended)",
+          "synonyms": "Status",
+          "pii": false
+        },
+        {
+          "name": "Statement_of_Work",
+          "description": "Statement of work for subrecipient",
+          "synonyms": "SOW, Scope of Work",
+          "pii": false
+        },
+        {
+          "name": "PI_Name",
+          "description": "Name of principal investigator at subrecipient institution",
+          "synonyms": "Subrecipient PI",
+          "pii": true
+        },
+        {
+          "name": "Monitoring_Plan",
+          "description": "Plan for monitoring subrecipient performance",
+          "synonyms": "Monitoring",
+          "pii": false
+        },
+        {
+          "name": "Risk_Level",
+          "description": "Risk assessment level (Low, Medium, High)",
+          "synonyms": "Risk",
+          "pii": false
+        }
+      ]
+    },
+    "Terms": {
+      "name": "Terms",
+      "description": "Terms and conditions for awards including payment, reporting, and special requirements",
+      "synonyms": "Award Terms, Conditions, Requirements",
+      "columns": [
+        {
+          "name": "AwardTerms_ID",
+          "description": "Primary key for award terms",
+          "synonyms": "Terms ID",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award these terms apply to",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Payment_Method",
+          "description": "Payment method (Reimbursement, Advance, Cost-Reimbursement, Fixed-Price, Letter-of-Credit, Payment-Request)",
+          "synonyms": "Payment Type",
+          "pii": false
+        },
+        {
+          "name": "Invoicing_Frequency",
+          "description": "How often invoices should be submitted (Monthly, Quarterly, Semi-Annual, Annual, Upon-Request, Milestone)",
+          "synonyms": "Billing Frequency",
+          "pii": false
+        },
+        {
+          "name": "Invoice_Submission_Days",
+          "description": "Number of days allowed for invoice submission after period end",
+          "synonyms": "Submission Days",
+          "pii": false
+        },
+        {
+          "name": "Reporting_Requirements",
+          "description": "Description of reporting requirements",
+          "synonyms": "Reports Required",
+          "pii": false
+        },
+        {
+          "name": "Special_Conditions",
+          "description": "Special terms and conditions of the award",
+          "synonyms": "Conditions",
+          "pii": false
+        },
+        {
+          "name": "Property_Requirements",
+          "description": "Equipment and property management requirements",
+          "synonyms": "Property Rules",
+          "pii": false
+        },
+        {
+          "name": "Publication_Requirements",
+          "description": "Requirements for publications and acknowledgments",
+          "synonyms": "Publication Rules",
+          "pii": false
+        },
+        {
+          "name": "Closeout_Requirements",
+          "description": "Requirements for award closeout",
+          "synonyms": "Closeout",
+          "pii": false
+        },
+        {
+          "name": "Record_Retention_Years",
+          "description": "Number of years records must be retained",
+          "synonyms": "Retention Period",
+          "pii": false
+        }
+      ]
+    },
+    "Transaction": {
+      "name": "Transaction",
+      "description": "Financial transactions charged to awards from institutional accounting system",
+      "synonyms": "Expenses, Charges, Ledger Entries",
+      "columns": [
+        {
+          "name": "Transaction_ID",
+          "description": "Primary key for transaction",
+          "synonyms": "Trans ID",
+          "pii": false
+        },
+        {
+          "name": "Fund_Code",
+          "description": "Fund code transaction is charged to",
+          "synonyms": "Fund",
+          "pii": false
+        },
+        {
+          "name": "Account_Code",
+          "description": "Account code transaction is charged to",
+          "synonyms": "Account",
+          "pii": false
+        },
+        {
+          "name": "Finance_Code",
+          "description": "Finance code transaction is charged to",
+          "synonyms": "Finance String",
+          "pii": false
+        },
+        {
+          "name": "Transaction_Date",
+          "description": "Date transaction occurred",
+          "synonyms": "Date",
+          "pii": false
+        },
+        {
+          "name": "Fiscal_Year",
+          "description": "Fiscal year of transaction",
+          "synonyms": "FY",
+          "pii": false
+        },
+        {
+          "name": "Fiscal_Period",
+          "description": "Fiscal period of transaction (typically 1-12 for months)",
+          "synonyms": "Period, Month",
+          "pii": false
+        },
+        {
+          "name": "Transaction_Amount",
+          "description": "Dollar amount of transaction",
+          "synonyms": "Amount",
+          "pii": false
+        },
+        {
+          "name": "Transaction_Type_Value_ID",
+          "description": "Type of transaction from AllowedValues (Expense, Revenue, Encumbrance, Transfer, Adjustment, Reversal, Cost Share)",
+          "synonyms": "Type",
+          "pii": false
+        },
+        {
+          "name": "Description",
+          "description": "Description of transaction",
+          "synonyms": "Details, Memo",
+          "pii": false
+        },
+        {
+          "name": "Award_ID",
+          "description": "Award transaction is associated with",
+          "synonyms": "Award",
+          "pii": false
+        },
+        {
+          "name": "Project_ID",
+          "description": "Project transaction is associated with",
+          "synonyms": "Project",
+          "pii": false
+        },
+        {
+          "name": "AwardBudgetPeriod_ID",
+          "description": "Budget period transaction is associated with",
+          "synonyms": "Period ID",
+          "pii": false
+        },
+        {
+          "name": "Document_Number",
+          "description": "Document number from source system",
+          "synonyms": "Doc Number",
+          "pii": false
+        },
+        {
+          "name": "Journal_ID",
+          "description": "Journal entry identifier",
+          "synonyms": "Journal Number",
+          "pii": false
+        },
+        {
+          "name": "Vendor_ID",
+          "description": "Vendor identifier for expense transactions",
+          "synonyms": "Vendor",
+          "pii": false
+        },
+        {
+          "name": "Personnel_ID",
+          "description": "Personnel associated with transaction (for salary transactions)",
+          "synonyms": "Person ID",
+          "pii": false
+        },
+        {
+          "name": "Reference_Number",
+          "description": "Reference or confirmation number",
+          "synonyms": "Reference",
+          "pii": false
+        },
+        {
+          "name": "Is_Reconciled",
+          "description": "Flag indicating if transaction has been reconciled",
+          "synonyms": "Reconciled",
+          "pii": false
+        }
+      ]
+    }
+  },
+  "table_count": 29
+}
