@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UDM Data Dictionary Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Breadcrumb Navigation */
+        .breadcrumb {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .breadcrumb .separator {
+            color: #95a5a6;
+            user-select: none;
+        }
+
+        .breadcrumb .current {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        /* Getting Started */
+        .getting-started {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+
+        .getting-started h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .getting-started p {
+            color: #546e7a;
+            margin-bottom: 1rem;
+        }
+
+        .getting-started p strong {
+            color: #2c3e50;
+        }
+
+        /* Core Tables Grid */
+        .core-tables {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .table-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .table-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .table-card.organization { border-left-color: #4A90E2; }
+        .table-card.project { border-left-color: #BD10E0; }
+        .table-card.personnel { border-left-color: #F5A623; }
+        .table-card.transaction { border-left-color: #7ED321; }
+
+        .table-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+
+        .table-card p {
+            color: #546e7a;
+            font-size: 0.9rem;
+        }
+
+        /* Table View */
+        .table-view {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+        }
+
+        .table-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .table-header .description {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .fields-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .fields-table thead {
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .fields-table th {
+            padding: 1rem 2rem;
+            text-align: left;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .fields-table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+            transition: background 0.2s ease;
+        }
+
+        .fields-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .fields-table td {
+            padding: 1rem 2rem;
+        }
+
+        .field-name {
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .field-name.fk {
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            transition: color 0.2s ease;
+        }
+
+        .field-name.fk:hover {
+            color: #764ba2;
+        }
+
+        .field-description {
+            color: #546e7a;
+            font-size: 0.9rem;
+        }
+
+        .pii-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+
+        /* Related Tables Section */
+        .related-tables {
+            padding: 2rem;
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .related-tables h3 {
+            color: #2c3e50;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .related-tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .related-table-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .related-table-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+            border-left-color: #764ba2;
+        }
+
+        .related-table-card h4 {
+            color: #2c3e50;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Hide elements */
+        .hidden {
+            display: none;
+        }
+
+        /* Loading state */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>UDM Data Dictionary Browser</h1>
+        <p>Explore the Universal Data Model for Research Administration</p>
+    </header>
+
+    <div class="container">
+        <!-- Breadcrumb Navigation -->
+        <div id="breadcrumb" class="breadcrumb hidden">
+            <a href="#" onclick="showHome(); return false;">Home</a>
+        </div>
+
+        <!-- Getting Started Section -->
+        <div id="getting-started" class="getting-started">
+            <h2>Getting Started</h2>
+            <p>
+                The Universal Data Model (UDM) provides a standardized structure for research administration data.
+                This interactive browser helps you explore table definitions and understand relationships between entities.
+            </p>
+            <p>
+                <strong>How to use:</strong> Click on a table below to see its fields and descriptions.
+                You can navigate in two ways:
+            </p>
+            <ul style="margin-left: 2rem; margin-bottom: 1rem;">
+                <li><strong>Navigate up (to parents):</strong> Click foreign key fields (shown in <span style="color: #667eea; text-decoration: underline; text-decoration-style: dotted;">blue with dotted underline</span>) to view referenced tables</li>
+                <li><strong>Navigate down (to children):</strong> Click related table cards below the field list to view tables that reference the current table</li>
+            </ul>
+            <p>Use the breadcrumb trail above to navigate back through your path.</p>
+
+            <h3 style="margin-top: 2rem; margin-bottom: 1rem; color: #2c3e50;">Entry Points</h3>
+            <div class="core-tables">
+                <div class="table-card organization" onclick="showTable('Organization')">
+                    <h3>Organization</h3>
+                    <p>Institutional entities including sponsors, departments, and subrecipients</p>
+                </div>
+                <div class="table-card project" onclick="showTable('Project')">
+                    <h3>Project</h3>
+                    <p>Research and training projects (navigate to Awards, Proposals)</p>
+                </div>
+                <div class="table-card personnel" onclick="showTable('Personnel')">
+                    <h3>Personnel</h3>
+                    <p>Individuals involved in projects and awards</p>
+                </div>
+                <div class="table-card transaction" onclick="showTable('Transaction')">
+                    <h3>Transaction</h3>
+                    <p>Financial transactions, funds, accounts, and invoicing</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table View (initially hidden) -->
+        <div id="table-view" class="hidden">
+            <div class="table-view">
+                <div class="table-header">
+                    <h2 id="table-title"></h2>
+                    <div class="description" id="table-description"></div>
+                </div>
+                <table class="fields-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">Field Name</th>
+                            <th style="width: 70%;">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fields-tbody">
+                    </tbody>
+                </table>
+                <!-- Related Tables Section -->
+                <div id="related-tables-section" class="related-tables hidden">
+                    <h3>Related Tables</h3>
+                    <p style="color: #546e7a; margin-bottom: 1rem;">Tables that reference this table:</p>
+                    <div id="related-tables-grid" class="related-tables-grid">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dataDictionary = {};
+        let relationships = [];
+        let reverseRelationships = {}; // Map of table -> list of tables that reference it
+        let navigationHistory = [];
+
+        // Load data
+        async function loadData() {
+            try {
+                const [ddResponse, relResponse] = await Promise.all([
+                    fetch('data/data-dictionary.json'),
+                    fetch('data/relationships.json')
+                ]);
+
+                const ddData = await ddResponse.json();
+                const relData = await relResponse.json();
+
+                dataDictionary = ddData.tables;
+                relationships = relData.relationships;
+
+                // Build reverse relationship map
+                buildReverseRelationships();
+
+                console.log('Data loaded:', Object.keys(dataDictionary).length, 'tables');
+            } catch (error) {
+                console.error('Error loading data:', error);
+                alert('Error loading data. Please ensure you are running a local web server (python3 -m http.server 8000).');
+            }
+        }
+
+        // Build reverse relationship map (table -> list of child tables)
+        function buildReverseRelationships() {
+            reverseRelationships = {};
+
+            relationships.forEach(rel => {
+                const fromTable = rel.from_table;
+                const toTable = rel.to_table;
+
+                // Skip self-referential relationships for reverse map
+                if (fromTable !== toTable) {
+                    if (!reverseRelationships[toTable]) {
+                        reverseRelationships[toTable] = [];
+                    }
+                    if (!reverseRelationships[toTable].includes(fromTable)) {
+                        reverseRelationships[toTable].push(fromTable);
+                    }
+                }
+            });
+
+            // Sort for consistent display
+            for (const table in reverseRelationships) {
+                reverseRelationships[table].sort();
+            }
+
+            console.log('Reverse relationships built');
+        }
+
+        // Get target table for a foreign key field
+        function getForeignKeyTarget(tableName, fieldName) {
+            const rel = relationships.find(r =>
+                r.from_table === tableName && r.from_column === fieldName
+            );
+            return rel ? rel.to_table : null;
+        }
+
+        // Show a table
+        function showTable(tableName) {
+            const table = dataDictionary[tableName];
+            if (!table) {
+                console.error('Table not found:', tableName);
+                return;
+            }
+
+            // Don't add to history if navigating to the same table (self-referential FK)
+            const currentTable = navigationHistory.length > 0 ? navigationHistory[navigationHistory.length - 1] : null;
+            if (currentTable !== tableName) {
+                navigationHistory.push(tableName);
+            }
+
+            // Update breadcrumb
+            updateBreadcrumb();
+
+            // Hide getting started, show table view
+            document.getElementById('getting-started').classList.add('hidden');
+            document.getElementById('table-view').classList.remove('hidden');
+            document.getElementById('breadcrumb').classList.remove('hidden');
+
+            // Update table header
+            document.getElementById('table-title').textContent = table.name;
+            document.getElementById('table-description').textContent = table.description || '';
+
+            // Build fields table
+            const tbody = document.getElementById('fields-tbody');
+            tbody.innerHTML = '';
+
+            table.columns.forEach(column => {
+                const tr = document.createElement('tr');
+
+                // Field name cell
+                const tdName = document.createElement('td');
+                const fieldSpan = document.createElement('span');
+                fieldSpan.textContent = column.name;
+                fieldSpan.className = 'field-name';
+
+                // Check if this is a foreign key
+                const fkTarget = getForeignKeyTarget(tableName, column.name);
+                if (fkTarget) {
+                    fieldSpan.classList.add('fk');
+                    fieldSpan.onclick = () => showTable(fkTarget);
+                    fieldSpan.title = `Click to view ${fkTarget} table`;
+                }
+
+                tdName.appendChild(fieldSpan);
+
+                // Add PII badge if applicable
+                if (column.pii) {
+                    const piiBadge = document.createElement('span');
+                    piiBadge.className = 'pii-badge';
+                    piiBadge.textContent = 'PII';
+                    piiBadge.title = 'Personally Identifiable Information';
+                    tdName.appendChild(piiBadge);
+                }
+
+                // Description cell
+                const tdDesc = document.createElement('td');
+                tdDesc.className = 'field-description';
+                tdDesc.textContent = column.description || '';
+
+                tr.appendChild(tdName);
+                tr.appendChild(tdDesc);
+                tbody.appendChild(tr);
+            });
+
+            // Build related tables section (child tables)
+            const relatedTablesSection = document.getElementById('related-tables-section');
+            const relatedTablesGrid = document.getElementById('related-tables-grid');
+            const childTables = reverseRelationships[tableName] || [];
+
+            if (childTables.length > 0) {
+                relatedTablesSection.classList.remove('hidden');
+                relatedTablesGrid.innerHTML = '';
+
+                childTables.forEach(childTable => {
+                    const card = document.createElement('div');
+                    card.className = 'related-table-card';
+                    card.onclick = () => showTable(childTable);
+
+                    const title = document.createElement('h4');
+                    title.textContent = childTable;
+
+                    card.appendChild(title);
+                    relatedTablesGrid.appendChild(card);
+                });
+            } else {
+                relatedTablesSection.classList.add('hidden');
+            }
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Update breadcrumb
+        function updateBreadcrumb() {
+            const breadcrumb = document.getElementById('breadcrumb');
+
+            let html = '<a href="#" onclick="showHome(); return false;">Home</a>';
+
+            navigationHistory.forEach((table, index) => {
+                html += ' <span class="separator">›</span> ';
+                if (index === navigationHistory.length - 1) {
+                    // Current page - not clickable
+                    html += `<span class="current">${table}</span>`;
+                } else {
+                    // Previous pages - clickable
+                    html += `<a href="#" onclick="navigateToIndex(${index}); return false;">${table}</a>`;
+                }
+            });
+
+            breadcrumb.innerHTML = html;
+        }
+
+        // Navigate to specific index in history
+        function navigateToIndex(index) {
+            const targetTable = navigationHistory[index];
+            // Remove everything after this index
+            navigationHistory = navigationHistory.slice(0, index);
+            // Show the table (will add it back to history)
+            showTable(targetTable);
+        }
+
+        // Show home
+        function showHome() {
+            navigationHistory = [];
+            document.getElementById('getting-started').classList.remove('hidden');
+            document.getElementById('table-view').classList.add('hidden');
+            document.getElementById('breadcrumb').classList.add('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize
+        loadData();
+    </script>
+</body>
+</html>
